@@ -2,6 +2,21 @@
 
 ---
 
+## 🛠️ Dev Log — 17 May 2026
+
+- Added backend + frontend validation to reject due dates before today
+- Handled invalid documents: AI returns `[]` if the file isn't an assignment spec, project is deleted and user gets an error
+- Added delete project button — three dots appear on hover, opens confirmation modal with blur background
+- Dots menu auto-closes when mouse leaves the project item
+- Added due date and weightage to the project view header
+- Due date formatted from `YYYY-MM-DD` to readable English (e.g. 19 May 2026)
+- Tasks Completed displayed as `X / Y` instead of two separate lines
+- Moved Groq API key to `.env` file for security
+- Set up Git and pushed project to private GitHub repo
+- Added DEVLOG / Updates Board as README
+
+---
+
 ## 🛠️ Dev Log — 16 May 2026
 
 - Built task completion with checkbox, undo button with red hover overlay, and live progress %

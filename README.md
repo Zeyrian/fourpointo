@@ -12,8 +12,6 @@
 - Due date formatted from `YYYY-MM-DD` to readable English (e.g. 19 May 2026)
 - Tasks Completed displayed as `X / Y` instead of two separate lines
 - Moved Groq API key to `.env` file for security
-- Set up Git and pushed project to private GitHub repo
-- Added DEVLOG / Updates Board as README
 
 ---
 

@@ -6,6 +6,10 @@ from flask import redirect
 import json
 from datetime import date
 from datetime import datetime
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 app = Flask(__name__)
 
@@ -28,7 +32,7 @@ def extract_text(file):
         return None
 
 def generate_tasks(pdf_text):
-    client = Groq(api_key="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")
+    client = Groq(api_key=os.getenv("GROQ_API_KEY"))
     
     response = client.chat.completions.create(
         model="llama-3.3-70b-versatile",

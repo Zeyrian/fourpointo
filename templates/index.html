@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>4point0</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>fourpoint.o</h1>
+    <div class="main">
+        <div class="sidebar">
+            <div class="sidebar-card">
+                <p>Projects / Progress</p>
+                {% for project in projects %}
+                <div class="project-item">
+                    <a href="/project/{{ project.id }}">
+                        <button class="project-btn {% if project.id == active_project %}active{% endif %}">{{ project.name }} ({{ project.progress }}%)</button>
+                    </a>
+                    <button class="dots-btn" onclick="event.preventDefault(); document.getElementById('dots-menu-{{ project.id }}').style.display='block'">⋯</button>
+                    <div class="dots-menu" id="dots-menu-{{ project.id }}" style="display:none;">
+                        <button onclick="event.stopPropagation(); document.getElementById('delete-modal-title').innerText='Are you sure you want to delete {{ project.name }}?'; document.getElementById('delete-confirm-btn').onclick=function(){window.location.href='/delete_project/{{ project.id }}'}; document.getElementById('delete-modal').style.display='flex'">Delete Project</button>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            <button class="add-btn" onclick="document.getElementById('modal').style.display='flex'">+</button>
+        </div>
+        
+        <div class="content">
+            {% if outstanding is defined or completed is defined %}
+            <div style="width: 100%; align-self: flex-start;">
+                {% if current_project %}
+                <div style="margin-bottom: 24px;">
+                    <h2>{{ current_project.name }}</h2>
+                    <p style="margin-top: 12px;"><strong>Due Date: {{ current_project.due_date }}</strong></p>
+                    <p style="color: #aaa;">Weightage: {{ current_project.weightage }}%</p>
+                    <hr style="border-color: #444; margin: 12px 0;">
+                    <p style="color: #aaa;">Progress: {{ current_project.progress }}%</p>
+                    <p style="color: #aaa;">Tasks Completed: {{ counts[2] }} / {{ counts[1] }}</p>
+                </div>
+                {% endif %}
+                <div class="task-columns">
+                    <div class="task-column">
+                        <h3 style="margin-bottom: 16px;">Outstanding Tasks</h3>
+                        {% for task in outstanding %}
+                        <div class="task-card" style="display: flex; justify-content: space-between; align-items: center;"
+                            onclick="document.getElementById('task-modal-title').innerText='{{ task[2] }}'; document.getElementById('task-modal-instructions').innerText='{{ task[3] }}'; document.getElementById('task-modal').style.display='flex'">
+                            <span>{{ task[2] }}</span>
+                            <input type="checkbox" onclick="event.stopPropagation(); window.location.href='/complete_task/{{ task[0] }}/{{ active_project }}'">
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <div class="task-column">
+                        <h3 style="margin-bottom: 16px;">Completed Tasks</h3>
+                        {% for task in completed %}
+                        <div class="task-card completed-card" onclick="window.location.href='/uncomplete_task/{{ task[0] }}/{{ active_project }}'">
+                            <span>{{ task[2] }}</span>
+                            <div class="undo-overlay">Mark as incomplete</div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <p class="welcome">Click any project to continue.</p>
+            {% endif %}
+        </div>
+    </div>
+    <div id="modal" style="display:none;" onclick="document.getElementById('modal').style.display='none'">
+        <form action="/add_project" method="POST" enctype="multipart/form-data" onclick="event.stopPropagation()" onsubmit="
+            document.querySelector('#modal button[type=submit]').disabled = true;
+            document.querySelector('#modal button[type=submit]').innerText = 'Generating steps...';
+        ">
+            <input type="text" name="assignment_name" placeholder="Project Name" required>
+            <input type="number" name="weightage" placeholder="Weightage" required>
+            <input type="date" name="due_date" id="due_date" placeholder="Due Date" required>
+            <input type="file" name="pdf" accept=".pdf,.docx" required>
+            <button type="submit">Create Project</button>
+        </form>
+    </div>
+    <div id="task-modal" style="display:none;" onclick="document.getElementById('task-modal').style.display='none'">
+        <div class="task-modal-content" onclick="event.stopPropagation()">
+            <h3 id="task-modal-title"></h3>
+            <p id="task-modal-instructions"></p>
+        </div>
+    </div>
+
+    <div id="delete-modal" style="display:none;" onclick="document.getElementById('delete-modal').style.display='none'">
+        <div class="task-modal-content" onclick="event.stopPropagation()">
+            <h3 id="delete-modal-title"></h3>
+            <p style="color: #aaa; margin-top: 8px;">This action cannot be undone.</p>
+            <div style="display: flex; gap: 12px; margin-top: 24px;">
+                <button id="delete-confirm-btn" style="flex: 1; background: #c0392b; color: white; border: none; padding: 10px; border-radius: 8px; cursor: pointer; font-weight: bold;">Delete</button>
+                <button onclick="document.getElementById('delete-modal').style.display='none'" style="flex: 1; background: transparent; color: white; border: 2px solid white; padding: 10px; border-radius: 8px; cursor: pointer;">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

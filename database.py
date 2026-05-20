@@ -1,15 +1,14 @@
 import sqlite3
-
 connection = sqlite3.connect('fourpointo.db')
 
 cursor = connection.cursor()
 
-def add_project(assignment_name, weightage, due_date):
+def add_project(assignment_name, weightage, due_date, filepath, rubric):
     connection = sqlite3.connect('fourpointo.db')
     cursor = connection.cursor()
     cursor.execute("""INSERT INTO projects 
-                   (assignment_name, weightage, due_date) VALUES (?, ?, ?)""",
-                   (assignment_name, weightage, due_date)
+                   (assignment_name, weightage, due_date, spec, rubric) VALUES (?, ?, ?, ?, ?)""",
+                   (assignment_name, weightage, due_date, filepath, rubric)
                    )
     
     connection.commit()
@@ -88,11 +87,22 @@ def get_task_counts(project_id):
     connection.close()
     return [progress, total_task_count, completed_count]
 
+def update_task_instructions(entry, task_id):
+    connection = sqlite3.connect('fourpointo.db')
+    cursor = connection.cursor()
+
+    cursor.execute("UPDATE tasks SET instructions = ? WHERE id = ?", (entry, task_id,))
+
+    connection.commit()
+    connection.close()
+
 cursor.execute("""CREATE TABLE IF NOT EXISTS projects (
                    id integer primary key autoincrement,
                    assignment_name text,
                    weightage integer,
-                   due_date text
+                   due_date text,
+                   spec text,
+                   rubric text
                    )
 
 """)

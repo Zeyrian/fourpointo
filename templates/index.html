@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>4point0</title>
+    <title>fourpointo</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <h1>fourpoint.o</h1>
+    <h1>4.0</h1>
     <div class="main">
         <div class="sidebar">
             <div class="sidebar-card">
@@ -28,13 +28,14 @@
         </div>
         
         <div class="content">
-            {% if outstanding is defined or completed is defined %}
+            {% if outstanding is defined and completed is defined and outstanding is not none and completed is not none %}
             <div style="width: 100%; align-self: flex-start;">
                 {% if current_project %}
                 <div style="margin-bottom: 24px;">
                     <h2>{{ current_project.name }}</h2>
                     <p style="margin-top: 12px;"><strong>Due Date: {{ current_project.due_date }}</strong></p>
                     <p style="color: #aaa;">Weightage: {{ current_project.weightage }}%</p>
+                    <a href="/{{ current_project.spec_file }}" target="_blank" style="color: #aaa; font-size: 0.9rem;">📄 View Spec</a>
                     <hr style="border-color: #444; margin: 12px 0;">
                     <p style="color: #aaa;">Progress: {{ current_project.progress }}%</p>
                     <p style="color: #aaa;">Tasks Completed: {{ counts[2] }} / {{ counts[1] }}</p>
@@ -45,7 +46,7 @@
                         <h3 style="margin-bottom: 16px;">Outstanding Tasks</h3>
                         {% for task in outstanding %}
                         <div class="task-card" style="display: flex; justify-content: space-between; align-items: center;"
-                            onclick="document.getElementById('task-modal-title').innerText='{{ task[2] }}'; document.getElementById('task-modal-instructions').innerText='{{ task[3] }}'; document.getElementById('task-modal').style.display='flex'">
+                            onclick="openTaskModal({{ task[0] }}, '{{ task[2] }}', '{{ task[3] }}')">
                             <span>{{ task[2] }}</span>
                             <input type="checkbox" onclick="event.stopPropagation(); window.location.href='/complete_task/{{ task[0] }}/{{ active_project }}'">
                         </div>
@@ -60,6 +61,33 @@
                         </div>
                         {% endfor %}
                     </div>
+                    <div class="task-column">
+                        <h3 style="margin-bottom: 16px;">Marking Rubric (Click To Expand)</h3>
+                        {% if current_project and current_project.rubric %}
+                        <table class="rubric-table">
+                            <thead>
+                                <tr>
+                                    <th>Criteria</th>
+                                    <th>Marks</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in current_project.rubric %}
+                                <tr class="rubric-row" 
+                                    data-criteria="{{ item.criteria }}"
+                                    data-in-context="{{ item.in_context }}"
+                                    data-levels='{{ item.performance_levels | tojson }}'
+                                    onclick="openRubricModal(this)">
+                                    <td>{{ item.criteria }}</td>
+                                    <td>{{ item.marks }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                        {% else %}
+                        <p style="color: #aaa; font-size: 0.85rem;">No marking rubric found.</p>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
             {% else %}
@@ -68,21 +96,31 @@
         </div>
     </div>
     <div id="modal" style="display:none;" onclick="document.getElementById('modal').style.display='none'">
-        <form action="/add_project" method="POST" enctype="multipart/form-data" onclick="event.stopPropagation()" onsubmit="
-            document.querySelector('#modal button[type=submit]').disabled = true;
-            document.querySelector('#modal button[type=submit]').innerText = 'Generating steps...';
-        ">
+        <form id="add-project-form" enctype="multipart/form-data" onclick="event.stopPropagation()">
             <input type="text" name="assignment_name" placeholder="Project Name" required>
             <input type="number" name="weightage" placeholder="Weightage" required>
             <input type="date" name="due_date" id="due_date" placeholder="Due Date" required>
             <input type="file" name="pdf" accept=".pdf,.docx" required>
-            <button type="submit">Create Project</button>
+            <p id="form-error" style="color: #e74c3c; font-size: 0.85rem; display: none;"></p>
+            <button type="submit" id="submit-btn">Create Project</button>
         </form>
     </div>
     <div id="task-modal" style="display:none;" onclick="document.getElementById('task-modal').style.display='none'">
-        <div class="task-modal-content" onclick="event.stopPropagation()">
+        <div class="task-modal-content" onclick="event.stopPropagation()" style="position:relative;">
+            <button id="edit-btn" onclick="enableEdit()">✏️</button>
+            <button id="save-btn" style="display:none;" onclick="saveInstructions()">Save</button>
             <h3 id="task-modal-title"></h3>
             <p id="task-modal-instructions"></p>
+            <textarea id="task-modal-edit" style="display:none;"></textarea>
+        </div>
+    </div>
+
+    <div id="rubric-modal" style="display:none;" onclick="document.getElementById('rubric-modal').style.display='none'">
+        <div class="task-modal-content" onclick="event.stopPropagation()" style="width: 700px; max-height: 80vh; overflow-y: auto; padding: 32px;">
+            <h3 id="rubric-modal-criteria"></h3>
+            <p id="rubric-modal-in-context" style="color: #aaa; font-size: 0.85rem; margin-top: 6px;"></p>
+            <hr style="border-color: #444; margin: 12px 0;">
+            <div id="rubric-modal-levels" style="margin-top: 16px;"></div>
         </div>
     </div>
 

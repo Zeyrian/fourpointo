@@ -11,10 +11,50 @@ import os
 import uuid
 from docx2pdf import convert
 import pdfplumber
+from flask_login import LoginManager, login_required, login_user, logout_user, current_user
+from flask_login import UserMixin
+from flask_bcrypt import check_password_hash
 
 load_dotenv()
 
 app = Flask(__name__)
+app.secret_key = os.getenv("SECRET_KEY")
+
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = "landing"
+
+class User(UserMixin):
+    def __init__(self, id, username, email):
+        self.id = id
+        self.username = username
+        self.email = email
+
+@login_manager.user_loader
+def load_user(user_id):
+    user = database.get_user_by_id(user_id)
+    if user:
+        return User(user[0], user[1], user[2])
+    return None
+
+def is_weak_password(password: str):
+    criteria = {
+        "length": False,
+        "has_capitals": False,
+        "has_numbers": False,
+        "has_symbols": False
+    }
+    
+    if len(password) >= 8:
+        criteria["length"] = True
+    
+    criteria["has_capitals"] = any(letter.isupper() for letter in password)
+    
+    criteria["has_numbers"] = any(char.isnumeric() for char in password)
+
+    criteria["has_symbols"] = any(not char.isalnum() for char in password)
+
+    return False in criteria.values()
 
 def extract_text(file):
     filename = file.filename
@@ -125,9 +165,14 @@ def extract_rubric_text(filepath):
     
     return rubric_text
 
+@app.route("/landing")
+def landing():
+    return render_template("landing.html")
+
 @app.route("/")
+@login_required
 def index():
-    projects = database.get_projects()
+    projects = database.get_projects(current_user.id)
     project_data = []
     for project in projects:
         counts = database.get_task_counts(project[0])
@@ -144,7 +189,56 @@ def index():
         })
     return render_template("index.html", projects=project_data)
 
+@app.route("/register")
+def register():
+    return render_template("register.html")
+
+@app.route("/register_user", methods=["POST"])
+def register_user():
+    email = request.form["email"]
+    username = request.form["username"]
+    password = request.form["password"]
+
+    if is_weak_password(password):
+        return {"error": "Password is too weak"}, 400
+    
+    result = database.add_user(username, email, password, 0)
+    if isinstance(result, str):
+        return {"error": result}, 400
+    
+    login_user(User(result, username, email))
+    return {"redirect": "/"}, 200
+
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    if request.method == "POST":
+        identifier = request.form["identifier"]
+        password = request.form["password"]
+
+        if "@" in identifier:
+            user = database.get_user(identifier)
+        else:
+            user = database.get_user_by_username(identifier)
+
+        if not user:
+            return "Invalid credentials", 401
+
+        if check_password_hash(user[3], password):
+            login_user(User(user[0], user[1], user[2]))
+            return {"redirect": "/"}, 200
+        else:
+            return "Invalid credentials", 401
+    
+    return render_template("login.html")
+
+@app.route("/logout")
+@login_required
+def logout():
+    logout_user()
+    return redirect("/login")
+
 @app.route("/add_project", methods=["POST"])
+@login_required
 def add_project():
     assignment_name = request.form["assignment_name"]
     weightage = request.form["weightage"]
@@ -184,7 +278,7 @@ def add_project():
     print(rubric_raw)
     rubric_json = json.dumps(json.loads(rubric_raw))
 
-    project_id = database.add_project(assignment_name, weightage, due_date, filepath, rubric_json)
+    project_id = database.add_project(assignment_name, weightage, due_date, filepath, rubric_json, current_user.id)
 
     for task in tasks_json:
         database.add_task(project_id, task["title"], task["instructions"], 0)
@@ -192,6 +286,7 @@ def add_project():
     return {"redirect": f"/project/{project_id}"}, 200
 
 @app.route("/update_task/<int:task_id>", methods=["POST"])
+@login_required
 def update_task_instructions(task_id):
 
     entry = request.json["instructions"]
@@ -200,8 +295,9 @@ def update_task_instructions(task_id):
     return {"success": True}, 200
 
 @app.route("/project/<int:project_id>")
+@login_required
 def project(project_id):
-    projects = database.get_projects()
+    projects = database.get_projects(current_user.id)
     project_data = []
     for p in projects:
         counts = database.get_task_counts(p[0])
@@ -219,6 +315,8 @@ def project(project_id):
     
     tasks = database.get_tasks(project_id)
     current_project = next((p for p in project_data if p["id"] == project_id), None)
+    if current_project is None:
+        return {"error": "Unauthorised"}, 403
     counts = database.get_task_counts(project_id)
     outstanding = [t for t in tasks if t[4] == 0]
     completed = [t for t in tasks if t[4] == 1]
@@ -232,17 +330,29 @@ def project(project_id):
     counts=counts)
 
 @app.route("/complete_task/<int:task_id>/<int:project_id>")
+@login_required
 def complete_task(task_id, project_id):
+    project = database.get_project(project_id)
+    if not project or project[6] != current_user.id:
+        return {"error": "Unauthorised"}, 403
     database.complete_task(task_id)
     return redirect(f"/project/{project_id}")
 
 @app.route("/uncomplete_task/<int:task_id>/<int:project_id>")
+@login_required
 def uncomplete_task(task_id, project_id):
+    project = database.get_project(project_id)
+    if not project or project[6] != current_user.id:
+        return {"error": "Unauthorised"}, 403
     database.uncomplete_task(task_id)
     return redirect(f"/project/{project_id}")
 
 @app.route("/delete_project/<int:project_id>")
+@login_required
 def delete_project(project_id):
+    project = database.get_project(project_id)
+    if not project or project[6] != current_user.id:
+        return {"error": "Unauthorised"}, 403
     database.delete_project(project_id)
     return redirect("/")
 

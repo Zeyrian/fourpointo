@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>4point0</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #1e1e1e;
+      color: #fff;
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 24px;
+    }
+    h1 {
+      font-size: 28px;
+      font-weight: 700;
+    }
+    .btn-login {
+      background: #4a4a4a;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 12px 0;
+      width: 220px;
+      font-size: 15px;
+      font-weight: 500;
+      font-family: 'Inter', sans-serif;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .btn-login:hover { background: #5a5a5a; }
+    .or {
+      font-size: 13px;
+      color: #aaa;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+    a {
+      color: #4fc3f7;
+      font-size: 14px;
+      text-decoration: underline;
+    }
+    a:hover { color: #81d4fa; }
+  </style>
+</head>
+<body>
+  <h1>Welcome to 4 point 0.</h1>
+  <button class="btn-login" onclick="window.location.href='/login'">Login</button>
+  <span class="or">or</span>
+  <a href="/register">Sign Up</a>
+</body>
+</html>

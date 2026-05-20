@@ -1,14 +1,15 @@
 import sqlite3
+from flask_bcrypt import generate_password_hash
 connection = sqlite3.connect('fourpointo.db')
 
 cursor = connection.cursor()
 
-def add_project(assignment_name, weightage, due_date, filepath, rubric):
+def add_project(assignment_name, weightage, due_date, filepath, rubric, user_id):
     connection = sqlite3.connect('fourpointo.db')
     cursor = connection.cursor()
     cursor.execute("""INSERT INTO projects 
-                   (assignment_name, weightage, due_date, spec, rubric) VALUES (?, ?, ?, ?, ?)""",
-                   (assignment_name, weightage, due_date, filepath, rubric)
+                   (assignment_name, weightage, due_date, spec, rubric, user_id) VALUES (?, ?, ?, ?, ?, ?)""",
+                   (assignment_name, weightage, due_date, filepath, rubric, user_id)
                    )
     
     connection.commit()
@@ -18,6 +19,7 @@ def add_project(assignment_name, weightage, due_date, filepath, rubric):
 def delete_project(project_id):
     connection = sqlite3.connect('fourpointo.db')
     cursor = connection.cursor()
+    cursor.execute("DELETE FROM tasks WHERE project_id = ?", (project_id,))
     cursor.execute("DELETE FROM projects WHERE id = ?", (project_id,))
 
     connection.commit()
@@ -32,15 +34,23 @@ def add_task(project_id, title, instructions, completed):
     connection.commit()
     connection.close()
 
-def get_projects():
+def get_projects(user_id):
     connection = sqlite3.connect('fourpointo.db')
     cursor = connection.cursor()
-    cursor.execute("SELECT * FROM projects")
+    cursor.execute("SELECT * FROM projects WHERE user_id = ?", (user_id,))
     projects = cursor.fetchall()
 
     connection.close()
 
     return projects
+
+def get_project(project_id):
+    connection = sqlite3.connect('fourpointo.db')
+    cursor = connection.cursor()
+    cursor.execute("SELECT * FROM projects WHERE id = ?", (project_id,))
+    project = cursor.fetchone()
+    connection.close()
+    return project
 
 def get_tasks(project_id):
     connection = sqlite3.connect('fourpointo.db')
@@ -96,13 +106,70 @@ def update_task_instructions(entry, task_id):
     connection.commit()
     connection.close()
 
+def add_user(email, username, password, premium_user):
+    connection = sqlite3.connect('fourpointo.db')
+    cursor = connection.cursor()
+
+    cursor.execute("SELECT * FROM users WHERE email = ?", (email,))
+    emails = cursor.fetchall()
+
+    if len(emails) > 0:
+        return "Email already exists"
+    
+    cursor.execute("SELECT * FROM users WHERE username = ?", (username,))
+    users = cursor.fetchall()
+
+    if len(users) > 0:
+        return "Username already exists"
+    
+    hashed_password = generate_password_hash(password).decode('utf-8')
+    
+    cursor.execute("""INSERT INTO users
+                   (username, email, password, premium_user) VALUES (?, ?, ?, ?)
+                   """, (username, email, hashed_password, premium_user))
+    
+    connection.commit()
+    connection.close()
+    return cursor.lastrowid
+
+def get_user(email):
+    connection = sqlite3.connect('fourpointo.db')
+    cursor = connection.cursor()
+    cursor.execute("SELECT * FROM users where email = ?", (email,))
+
+    user = cursor.fetchone()
+
+    connection.close()
+    return user
+
+def get_user_by_id(id):
+    connection = sqlite3.connect('fourpointo.db')
+    cursor = connection.cursor()
+    cursor.execute("SELECT * FROM users where id = ?", (id,))
+
+    user = cursor.fetchone()
+
+    connection.close()
+    return user
+
+def get_user_by_username(username):
+    connection = sqlite3.connect('fourpointo.db')
+    cursor = connection.cursor()
+    cursor.execute("SELECT * FROM users where username = ?", (username,))
+
+    user = cursor.fetchone()
+
+    connection.close()
+    return user
+
 cursor.execute("""CREATE TABLE IF NOT EXISTS projects (
                    id integer primary key autoincrement,
                    assignment_name text,
                    weightage integer,
                    due_date text,
                    spec text,
-                   rubric text
+                   rubric text,
+                   user_id integer
                    )
 
 """)
@@ -117,6 +184,16 @@ cursor.execute("""
                    )
 
 
+""")
+
+cursor.execute("""
+                    CREATE TABLE IF NOT EXISTS users (
+                    id integer primary key autoincrement,
+                    username text,
+                    email text,
+                    password text,
+                    premium_user integer
+               )
 """)
 
 print("Command executed successfully")

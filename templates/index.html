@@ -3,13 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>fourpointo</title>
+        <title>fourpointo</title>
+        <link rel="icon" type="image/png" href="{{ url_for('static', filename='4point0-removebg-preview.png') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <h1>4.0</h1>
     <div class="main">
         <div class="sidebar">
+            <img src="{{ url_for('static', filename='4point0-removebg-preview.png') }}" height="32" width="32" style="margin-bottom: 8px;">
             <div class="sidebar-card">
                 <p>Projects / Progress</p>
                 {% for project in projects %}

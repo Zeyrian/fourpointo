@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>4point0 — Log in</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #1e1e1e;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    h1 {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      width: 100%;
+      max-width: 360px;
+    }
+    .card {
+      background: #3a3a3a;
+      border-radius: 12px;
+      padding: 24px 20px;
+      width: 100%;
+      max-width: 360px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .field { display: flex; flex-direction: column; gap: 6px; }
+    .label-row { display: flex; justify-content: space-between; align-items: center; }
+    label { font-size: 13px; color: #fff; }
+    .show-btn {
+      background: none;
+      border: none;
+      color: #4fc3f7;
+      font-size: 13px;
+      font-family: Arial, sans-serif;
+      cursor: pointer;
+      padding: 0;
+    }
+    input[type="text"],
+    input[type="password"] {
+      width: 100%;
+      background: #4a4a4a;
+      border: 1px solid #5a5a5a;
+      border-radius: 6px;
+      padding: 10px 12px;
+      font-size: 14px;
+      font-family: Arial, sans-serif;
+      color: #fff;
+      outline: none;
+    }
+    input[type="text"]:focus,
+    input[type="password"]:focus { border-color: #888; }
+    .checkbox-row { display: flex; align-items: center; gap: 8px; font-size: 13px; }
+    input[type="checkbox"] { width: 15px; height: 15px; accent-color: #4fc3f7; cursor: pointer; }
+    .btn {
+      background: #4a4a4a;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 12px;
+      font-size: 15px;
+      font-weight: 700;
+      font-family: Arial, sans-serif;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .btn:hover { background: #5a5a5a; }
+    .error-msg {
+      background: #3a1a1a;
+      border: 1px solid #7a3a3a;
+      color: #ff8080;
+      font-size: 13px;
+      padding: 10px 12px;
+      border-radius: 6px;
+      display: none;
+    }
+    a { color: #4fc3f7; text-decoration: underline; }
+    a:hover { color: #81d4fa; }
+  </style>
+</head>
+<body>
+
+  <h1>Log in</h1>
+
+  <div class="card">
+    <div class="error-msg" id="error-msg"></div>
+
+    <div class="field">
+      <label for="identifier">Username or email</label>
+      <input type="text" id="identifier" required autofocus>
+    </div>
+
+    <div class="field">
+      <div class="label-row">
+        <label for="password">Password</label>
+        <button class="show-btn" type="button" onclick="togglePassword('password', this)">Show</button>
+      </div>
+      <input type="password" id="password" required>
+    </div>
+
+    <div class="checkbox-row">
+      <input type="checkbox" id="remember">
+      <label for="remember">Keep me logged in</label>
+    </div>
+
+    <button class="btn" onclick="handleLogin()">Log in</button>
+  </div>
+
+  <p style="margin-top: 14px; font-size: 13px; color: #aaa;">
+    No account? <a href="/register">Create An Account</a>
+  </p>
+
+  <script>
+    function togglePassword(id, btn) {
+      const input = document.getElementById(id);
+      if (input.type === 'password') {
+        input.type = 'text';
+        btn.textContent = 'Hide';
+      } else {
+        input.type = 'password';
+        btn.textContent = 'Show';
+      }
+    }
+
+    async function handleLogin() {
+      const identifier = document.getElementById('identifier').value.trim();
+      const password = document.getElementById('password').value;
+      const errorEl = document.getElementById('error-msg');
+      errorEl.style.display = 'none';
+
+      if (!identifier || !password) {
+        errorEl.textContent = 'Please fill in all fields.';
+        errorEl.style.display = 'block';
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append('identifier', identifier);
+      formData.append('password', password);
+
+      const res = await fetch('/login', { method: 'POST', body: formData });
+      const data = await res.json();
+
+      if (res.ok && data.redirect) {
+        window.location.href = data.redirect;
+      } else {
+        errorEl.textContent = data.error || 'Invalid credentials.';
+        errorEl.style.display = 'block';
+      }
+    }
+
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Enter') handleLogin();
+    });
+  </script>
+</body>
+</html>

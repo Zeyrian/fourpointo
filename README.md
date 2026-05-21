@@ -2,6 +2,20 @@
 
 ---
 
+## 🛠️ Dev Log — 20 May 2026
+
+- Built full authentication system — register, login, and logout with flask-login and bcrypt password hashing
+- Added users table with username, email, hashed password, and premium user flag
+- Login supports both email and username via @ detection
+- Added password strength validation — checks length, uppercase, numbers, and symbols
+- Tied projects to users via user_id — users can only see and modify their own projects
+- Added ownership checks on delete, complete, and uncomplete task routes to prevent unauthorised access
+- Added @login_required across all protected routes
+- Fixed orphaned tasks bug — deleting a project now deletes its associated tasks
+- Built landing.html, login.html, and register.html matching app wireframe
+
+---
+
 ## 🛠️ Dev Log — 19 May 2026
 
 - Added a view spec hyperlink which allows users to easily view their original specifications

@@ -14,11 +14,14 @@ import pdfplumber
 from flask_login import LoginManager, login_required, login_user, logout_user, current_user
 from flask_login import UserMixin
 from flask_bcrypt import check_password_hash
+from datetime import timedelta
 
 load_dotenv()
 
 app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY")
+
+app.config['REMEMBER_COOKIE_DURATION'] = timedelta(days=30)
 
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -202,7 +205,7 @@ def register_user():
     if is_weak_password(password):
         return {"error": "Password is too weak"}, 400
     
-    result = database.add_user(username, email, password, 0)
+    result = database.add_user(email, username, password, 0)
     if isinstance(result, str):
         return {"error": result}, 400
     
@@ -221,13 +224,14 @@ def login():
             user = database.get_user_by_username(identifier)
 
         if not user:
-            return "Invalid credentials", 401
+            return {"error": "Invalid credentials"}, 401
 
         if check_password_hash(user[3], password):
-            login_user(User(user[0], user[1], user[2]))
+            remember = request.form.get('remember') == 'on'
+            login_user(User(user[0], user[1], user[2]), remember=remember)
             return {"redirect": "/"}, 200
         else:
-            return "Invalid credentials", 401
+            return {"error": "Invalid credentials"}, 401
     
     return render_template("login.html")
 

@@ -26,6 +26,7 @@
                 {% endfor %}
             </div>
             <button class="add-btn" onclick="document.getElementById('modal').style.display='flex'">+</button>
+            <a href="/logout" style="font-size: 0.75rem; color: #4fc3f7; text-align: center; text-decoration: underline; margin-top: 4px;">Logout</a>
         </div>
         
         <div class="content">
@@ -92,7 +93,7 @@
                 </div>
             </div>
             {% else %}
-            <p class="welcome">Click any project to continue.</p>
+            <p class="welcome">Welcome {{ current_user.username }}, click any project or create a new project to continue.</p>
             {% endif %}
         </div>
     </div>

@@ -2,6 +2,27 @@
 
 ---
 
+## 🛠️ Dev Log — 21 May 2026 (Released Ver. 1)
+
+- Set up Ubuntu Server 26.04 LTS on Dell Latitude 7300 (old laptop) as dedicated server
+- Connected laptop to home WiFi via netplan config
+- Cloned 4point0 from GitHub onto server
+- Set up Gunicorn as a systemd service with auto-restart
+- Purchased domain fourpointo.app via Namecheap
+- Configured Cloudflare DNS and connected domain to Cloudflare
+- Set up Cloudflare Tunnel linking fourpointo.app to local Gunicorn server
+- Both services auto-start on boot via systemd
+- Configured lid close to not suspend (HandleLidSwitch=ignore)
+- Set up SSH access from new machine to server
+- App is live at ```fourpointo.app```
+
+### Known issues
+
+- Mobile layout needs CSS work
+- Groq API key needs to be managed carefully on server
+
+---
+
 ## 🛠️ Dev Log — 20 May 2026
 
 - Built full authentication system — register, login, and logout with flask-login and bcrypt password hashing

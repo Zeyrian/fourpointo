@@ -2,3 +2,6 @@ fourpointo.db
 __pycache__/
 *.pyc
 .env
+fourpointo.db
+__pycache__/
+static/uploads/

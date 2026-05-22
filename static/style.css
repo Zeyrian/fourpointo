@@ -10,9 +10,16 @@ body {
 .main { display: flex; flex: 1; overflow: hidden; }
 
 .sidebar {
+    width: 240px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    background-color: #252525;
     border: 1px solid #3a3a3a;
     border-radius: 12px;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+    margin: 16px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.5);
 }
 
 .sidebar-card {

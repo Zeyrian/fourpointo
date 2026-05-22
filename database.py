@@ -189,8 +189,8 @@ cursor.execute("""
 cursor.execute("""
                     CREATE TABLE IF NOT EXISTS users (
                     id integer primary key autoincrement,
-                    username text,
-                    email text,
+                    username text UNIQUE,
+                    email text UNIQUE,
                     password text,
                     premium_user integer
                )

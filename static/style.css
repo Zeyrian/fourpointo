@@ -15,10 +15,8 @@ body {
     display: flex;
     flex-direction: column;
     gap: 8px;
-    background-color: #252525;
     border: 1px solid #3a3a3a;
     border-radius: 12px;
-    margin: 16px;
     box-shadow: 0 4px 20px rgba(0,0,0,0.5);
 }
 
@@ -31,6 +29,8 @@ body {
     gap: 8px;
     flex: 1;
     overflow-y: auto;
+    border: 1px solid #3a3a3a;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.4);
 }
 
 .sidebar-card a {

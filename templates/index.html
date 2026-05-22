@@ -10,7 +10,10 @@
 <body>
     <div class="main">
         <div class="sidebar">
-            <img src="{{ url_for('static', filename='4point0-removebg-preview.png') }}" height="32" width="32" style="margin-bottom: 8px;">
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                <img src="{{ url_for('static', filename='4point0-removebg-preview.png') }}" height="32" width="32">
+                <span style="font-weight: bold; font-size: 1rem;">fourpointo</span>
+            </div>
             <div class="sidebar-card">
                 <p>Projects / Progress</p>
                 {% for project in projects %}

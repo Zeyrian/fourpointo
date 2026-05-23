@@ -418,6 +418,10 @@ body {
     body {
       overflow-x: hidden;
     }
+
+    .sidebar-card {
+        max-height: 60vh;
+    }
   
     .sidebar {
       position: fixed;

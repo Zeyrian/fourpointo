@@ -82,6 +82,7 @@ def generate_tasks(pdf_text):
     
     response = client.chat.completions.create(
         model="llama-3.3-70b-versatile",
+        temperature = 0,
         messages=[
             {
                 "role": "user",
@@ -105,6 +106,7 @@ def generate_rubric(table_text, weightage):
     
     response = client.chat.completions.create(
         model="llama-3.3-70b-versatile",
+        temperature = 0,
         messages=[
             {
                 "role": "user",

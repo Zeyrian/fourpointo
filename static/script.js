@@ -151,4 +151,5 @@ function openRubricModal(row) {
 function toggleSidebar() {
     document.getElementById('sidebar').classList.toggle('open');
     document.getElementById('sidebar-overlay').classList.toggle('open');
+    document.getElementById('hamburger-btn').classList.toggle('hidden');
   }

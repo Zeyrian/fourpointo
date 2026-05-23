@@ -449,7 +449,7 @@ body {
   
     .hamburger-btn {
       display: flex;
-      border: 2px solid red !important;
+      border: 2px solid #3a3a3a !important;
     }
   
     .content {
@@ -460,3 +460,7 @@ body {
       grid-template-columns: 1fr;
     }
 }
+
+.hidden {
+    display: none !important;
+  }

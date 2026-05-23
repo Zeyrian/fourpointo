@@ -8,8 +8,10 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
+    <button class="hamburger-btn" id="hamburger-btn" onclick="toggleSidebar()">☰</button>
+    <div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
     <div class="main">
-        <div class="sidebar">
+        <div class="sidebar" id="sidebar">
             <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
                 <img src="{{ url_for('static', filename='4point0-removebg-preview.png') }}" height="32" width="32">
                 <span style="font-weight: bold; font-size: 1rem;">fourpointo</span>

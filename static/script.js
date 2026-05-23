@@ -147,3 +147,8 @@ function openRubricModal(row) {
 
     document.getElementById('rubric-modal').style.display = 'flex';
 }
+
+function toggleSidebar() {
+    document.getElementById('sidebar').classList.toggle('open');
+    document.getElementById('sidebar-overlay').classList.toggle('open');
+  }

@@ -7,7 +7,12 @@ body {
     flex-direction: column;
 }
 
-.main { display: flex; flex: 1; overflow: hidden; }
+.main {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+    position: relative;
+  }
 
 .sidebar {
     width: 240px;
@@ -378,6 +383,10 @@ body {
 }
 
 @media (max-width: 768px) {
+    body {
+      overflow-x: hidden;
+    }
+  
     .sidebar {
       position: fixed;
       top: 0; left: 0;
@@ -387,6 +396,7 @@ body {
       transition: transform 0.25s ease;
       background: #1e1e1e;
       width: 260px;
+      overflow-y: auto;
     }
   
     .sidebar.open {
@@ -417,7 +427,6 @@ body {
       grid-template-columns: 1fr;
     }
   }
-  
   
   .hamburger-btn {
     display: none;

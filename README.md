@@ -2,6 +2,13 @@
 
 ---
 
+## 🛠️ Dev Log — 23 May 2026
+- Added mobile support
+- AI Temperature set to 0 for the most consistent answers
+- General UI Updates
+
+---
+
 ## 🛠️ Dev Log — 21 May 2026 (Released Ver. 1)
 
 - Set up Ubuntu Server 26.04 LTS on Dell Latitude 7300 (old laptop) as dedicated server
@@ -18,7 +25,7 @@
 
 ### Known issues
 
-- Mobile layout needs CSS work
+- ~Mobile layout needs CSS work~
 - Groq API key needs to be managed carefully on server
 
 ---

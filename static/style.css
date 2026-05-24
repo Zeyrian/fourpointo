@@ -109,6 +109,11 @@ body {
     margin-bottom: 6px;
     cursor: pointer;
     font-size: 0.8rem;
+    transition: background 0.15s ease;
+}
+
+.task-card:hover {
+    background: #3a3a3a;
 }
 
 .completed-card {

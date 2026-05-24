@@ -1,7 +1,26 @@
-# 4point0 Updates Board
+# fourpointo
+
+A Flask web app for polytechnic students to manage projects. Students upload their assignment brief as a PDF and the app uses AI to generate a structured task list from the spec.
+
+🌐 **[fourpointo.app](https://fourpointo.app)**
+
+**Stack:** Python · Flask · SQLite · Groq (LLaMA 3.3 70B) · Cloudflare · Gunicorn
 
 ---
 
+## Features
+- PDF upload and AI-powered task generation from assignment specs
+- User authentication with bcrypt password hashing
+- Projects and tasks scoped to individual accounts
+- Ownership checks across all protected routes
+
+## Infrastructure
+Self-hosted on a repurposed Dell Latitude 7300 running Ubuntu Server 26.04. Gunicorn runs as a systemd service with auto-restart on boot. The domain was purchased via Namecheap, with DNS managed through Cloudflare and a Cloudflare Tunnel routing traffic to the local server. No port forwarding required.
+
+---
+
+# Updates Board
+---
 ## 🛠️ Dev Log — 23 May 2026
 - Added mobile support
 - AI Temperature set to 0 for the most consistent answers
@@ -69,7 +88,7 @@
 ## 🛠️ Dev Log — 16 May 2026
 
 - Built task completion with checkbox, undo button with red hover overlay, and live progress %
-- Added task detail popup — click any task to see full instructions in a modal
+- Added task detail popup. Click any task to see full instructions in a modal
 - Added docx support alongside PDF using python-docx
 - UX polish: loading state on form submit, form validation, blur modal background, sidebar card redesign, delete project with confirmation modal
 
@@ -79,7 +98,7 @@
 
 - Identified a gap: no project management app built specifically for poly students
 - Designed the first wireframe for the layout
-- Named the app **4point0** — the highest GPA you can get, and something we actually say
+- Named the app **fourpointo**. Pronounced 4-point-oh, it represents the highest GPA you can get, and something we actually say
 - Built the base HTML/CSS layout
 - Discovered Groq API (free, no age restriction) and integrated Llama for AI task generation
 - Got the first working task generation from a PDF in the terminal

@@ -366,5 +366,40 @@ def delete_project(project_id):
 def privacy():
     return render_template("privacy.html")
 
+@app.route("/demo")
+def demo():
+    demo_project = {
+        "id": "demo",
+        "name": "E-Commerce Product Listing Page",
+        "weightage": 20,
+        "due_date": "13 June 2026",
+        "progress": 33,
+        "spec_file": None,
+        "rubric": []
+    }
+
+    outstanding = [
+        (1, None, "Set Up HTML Structure", "Create your base HTML file. Include a <!DOCTYPE html> declaration, a <head> with a title and linked CSS file, and a <body> with semantic tags such as <header>, <main>, and <footer>. Do not add styling yet — focus only on structure.", 0),
+        (2, None, "Style the Page with CSS", "Apply styling to your HTML using an external CSS file. Use CSS Grid or Flexbox to arrange your product cards in a responsive grid. Each product card must display an image, product name, price, and an Add to Cart button. Ensure the page is readable on both desktop and mobile screen sizes.", 0),
+        (3, None, "Add Interactivity with JavaScript", "Write a JavaScript function that triggers when the Add to Cart button is clicked. Display a confirmation message such as 'Item added to cart' either as an alert or as an on-page notification. You do not need a functioning cart — just the button response.", 0),
+        (4, None, "Validate HTML and CSS", "Run your HTML file through the W3C Markup Validation Service at validator.w3.org and your CSS through the W3C CSS Validator at jigsaw.w3.org. Fix any errors flagged. Take screenshots of the validation results to include in your submission.", 0),
+        (5, None, "Write a Reflection", "Write a 200-300 word reflection addressing three points — what you planned to build, what challenges you faced during development, and what you would improve if given more time. Submit this as a separate document alongside your code files.", 0),
+    ]
+
+    completed = [
+        (6, None, "Plan the Page Layout", "Sketch a wireframe of your product listing page before writing any code. Your layout must include a navigation bar, a product grid with at least 6 products, and a footer. Decide on a colour scheme and font. You do not need to use design software — a hand-drawn sketch is acceptable.", 1),
+    ]
+
+    counts = [0.17, 6, 1]
+
+    return render_template("demo.html",
+        projects=[demo_project],
+        outstanding=outstanding,
+        completed=completed,
+        active_project="demo",
+        current_project=demo_project,
+        counts=counts
+    )
+
 if __name__ == "__main__":
     app.run(debug=True)

@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>fourpointo — Demo</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='4point0-removebg-preview.png') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <button class="hamburger-btn" id="hamburger-btn" onclick="toggleSidebar()">☰</button>
+    <div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
+    <div class="main">
+        <div class="sidebar" id="sidebar">
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                <img src="{{ url_for('static', filename='4point0-removebg-preview.png') }}" height="32" width="32">
+                <span style="font-weight: bold; font-size: 1rem;">fourpointo</span>
+            </div>
+            <div class="sidebar-card">
+                <p>Projects / Progress</p>
+                <div class="project-item">
+                    <button class="project-btn active">E-Commerce Product Listing Page (<span id="sidebar-progress">17</span>%)</button>
+                </div>
+            </div>
+            <button class="add-btn" onclick="document.getElementById('signup-modal').style.display='flex'">+ New Project</button>
+            <div style="display: flex; flex-direction: column; gap: 4px; margin-top: 4px;">
+                <a href="/login" style="font-size: 0.75rem; color: #4fc3f7; text-align: center; text-decoration: underline;">Login</a>
+                <a href="/register" style="font-size: 0.75rem; color: #4fc3f7; text-align: center; text-decoration: underline;">Sign Up</a>
+            </div>
+        </div>
+
+        <div class="content">
+            <div style="width: 100%; align-self: flex-start;">
+                <div style="margin-bottom: 24px;">
+                    <h2>E-Commerce Product Listing Page</h2>
+                    <p style="margin-top: 12px;"><strong>Due Date: 13 June 2026</strong></p>
+                    <p style="color: #aaa;">Weightage: 20%</p>
+                    <hr style="border-color: #444; margin: 12px 0;">
+                    <p style="color: #aaa;">Progress: <span id="progress-pct">17</span>%</p>
+                    <p style="color: #aaa;">Tasks Completed: <span id="completed-count">1</span> / 6</p>
+                </div>
+
+                <div class="task-columns">
+                    <div class="task-column">
+                        <h3 style="margin-bottom: 16px;">Outstanding Tasks</h3>
+                        <div id="outstanding-col">
+                            {% for task in outstanding %}
+                            <div class="task-card" id="task-{{ task[0] }}" style="display: flex; justify-content: space-between; align-items: center;"
+                                onclick="openTaskModal({{ task[0] }}, {{ task[2] | tojson }}, {{ task[3] | tojson }})">
+                                <span>{{ task[2] }}</span>
+                                <input type="checkbox" onclick="event.stopPropagation(); completeTask({{ task[0] }}, {{ task[2] | tojson }}, {{ task[3] | tojson }})">
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <div class="task-column">
+                        <h3 style="margin-bottom: 16px;">Completed Tasks</h3>
+                        <div id="completed-col">
+                            {% for task in completed %}
+                            <div class="task-card completed-card" id="task-{{ task[0] }}" onclick="uncompleteTask({{ task[0] }}, {{ task[2] | tojson }}, {{ task[3] | tojson }})">
+                                <span>{{ task[2] }}</span>
+                                <div class="undo-overlay">Mark as incomplete</div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <div class="task-column">
+                        <h3 style="margin-bottom: 16px;">Marking Rubric (Click To Expand)</h3>
+                        {% if current_project and current_project.rubric %}
+                        <table class="rubric-table">
+                            <thead>
+                                <tr>
+                                    <th>Criteria</th>
+                                    <th>Marks</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in current_project.rubric %}
+                                <tr class="rubric-row"
+                                    data-criteria="{{ item.criteria }}"
+                                    data-in-context="{{ item.in_context }}"
+                                    data-levels='{{ item.performance_levels | tojson }}'
+                                    onclick="openRubricModal(this)">
+                                    <td>{{ item.criteria }}</td>
+                                    <td>{{ item.marks }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sign up modal -->
+    <div id="signup-modal" style="display:none;" onclick="document.getElementById('signup-modal').style.display='none'">
+        <div class="task-modal-content" onclick="event.stopPropagation()" style="text-align: center; align-items: center;">
+            <h3>Create a free account to get started</h3>
+            <p style="color: #aaa; font-size: 0.9rem; margin-top: 4px;">Upload your own assignment brief and let AI break it down for you.</p>
+            <div style="display: flex; gap: 12px; margin-top: 24px; width: 100%;">
+                <a href="/register" style="flex: 1; background: white; color: black; padding: 10px; border-radius: 8px; font-weight: bold; text-decoration: none; text-align: center;">Sign Up</a>
+                <a href="/login" style="flex: 1; background: transparent; color: white; border: 2px solid white; padding: 10px; border-radius: 8px; text-decoration: none; text-align: center;">Login</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Task modal -->
+    <div id="task-modal" style="display:none;" onclick="document.getElementById('task-modal').style.display='none'">
+        <div class="task-modal-content" onclick="event.stopPropagation()" style="position:relative;">
+            <h3 id="task-modal-title"></h3>
+            <p id="task-modal-instructions"></p>
+        </div>
+    </div>
+
+    <!-- Rubric modal -->
+    <div id="rubric-modal" style="display:none;" onclick="document.getElementById('rubric-modal').style.display='none'">
+        <div class="task-modal-content" onclick="event.stopPropagation()" style="width: 700px; max-height: 80vh; overflow-y: auto; padding: 32px;">
+            <h3 id="rubric-modal-criteria"></h3>
+            <p id="rubric-modal-in-context" style="color: #aaa; font-size: 0.85rem; margin-top: 6px;"></p>
+            <hr style="border-color: #444; margin: 12px 0;">
+            <div id="rubric-modal-levels" style="margin-top: 16px;"></div>
+        </div>
+    </div>
+
+    <script>
+        let completedCount = 1;
+        const totalTasks = 6;
+
+        function updateProgress() {
+            const pct = Math.round((completedCount / totalTasks) * 100);
+            document.getElementById('progress-pct').innerText = pct;
+            document.getElementById('sidebar-progress').innerText = pct;
+            document.getElementById('completed-count').innerText = completedCount;
+        }
+
+        function completeTask(taskId, title, instructions) {
+            const card = document.getElementById('task-' + taskId);
+            if (!card) return;
+            card.className = 'task-card completed-card';
+            card.removeAttribute('style');
+            card.setAttribute('onclick', `uncompleteTask(${taskId}, ${JSON.stringify(title)}, ${JSON.stringify(instructions)})`);
+            card.innerHTML = `<span>${title}</span><div class="undo-overlay">Mark as incomplete</div>`;
+            document.getElementById('completed-col').appendChild(card);
+            completedCount++;
+            updateProgress();
+        }
+
+        function uncompleteTask(taskId, title, instructions) {
+            const card = document.getElementById('task-' + taskId);
+            if (!card) return;
+            card.className = 'task-card';
+            card.style.display = 'flex';
+            card.style.justifyContent = 'space-between';
+            card.style.alignItems = 'center';
+            card.setAttribute('onclick', `openTaskModal(${taskId}, ${JSON.stringify(title)}, ${JSON.stringify(instructions)})`);
+            card.innerHTML = `<span>${title}</span><input type="checkbox" onclick="event.stopPropagation(); completeTask(${taskId}, ${JSON.stringify(title)}, ${JSON.stringify(instructions)})">`;
+            document.getElementById('outstanding-col').appendChild(card);
+            completedCount--;
+            updateProgress();
+        }
+
+        function openTaskModal(taskId, title, instructions) {
+            document.getElementById('task-modal-title').innerText = title;
+            document.getElementById('task-modal-instructions').innerText = instructions;
+            document.getElementById('task-modal').style.display = 'flex';
+        }
+
+        function openRubricModal(row) {
+            const criteria = row.dataset.criteria;
+            const inContext = row.dataset.inContext;
+            const levels = JSON.parse(row.dataset.levels);
+
+            document.getElementById('rubric-modal-criteria').innerText = criteria;
+
+            const inContextEl = document.getElementById('rubric-modal-in-context');
+            if (inContext) {
+                inContextEl.innerText = inContext;
+                inContextEl.style.display = 'block';
+            } else {
+                inContextEl.style.display = 'none';
+            }
+
+            const levelsContainer = document.getElementById('rubric-modal-levels');
+            levelsContainer.innerHTML = '';
+
+            if (levels && levels.length > 0) {
+                const table = document.createElement('table');
+                table.className = 'rubric-table';
+                table.innerHTML = `
+                    <thead>
+                        <tr>
+                            <th>Grade</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${levels.map(l => `
+                            <tr>
+                                <td style="white-space: nowrap;">${l.grade}</td>
+                                <td>${l.description}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                `;
+                levelsContainer.appendChild(table);
+            }
+
+            document.getElementById('rubric-modal').style.display = 'flex';
+        }
+
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+            document.getElementById('sidebar-overlay').classList.toggle('open');
+            document.getElementById('hamburger-btn').classList.toggle('hidden');
+        }
+    </script>
+
+    <footer style="text-align: center; padding: 16px; font-size: 0.75rem; color: #666;">
+        Don't trust AI 100%. Always refer to your specifications. fourpointo is not responsible for your grade.
+    </footer>
+</body>
+</html>

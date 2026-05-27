@@ -368,14 +368,65 @@ def privacy():
 
 @app.route("/demo")
 def demo():
+    demo_rubric = [
+        {
+            "criteria": "HTML Structure",
+            "marks": "5%",
+            "in_context": "Semantic HTML tags, correct document structure, valid markup.",
+            "performance_levels": [
+                {"grade": "A", "description": "All semantic tags used correctly. Document structure is complete and valid. No errors on W3C validator."},
+                {"grade": "B", "description": "Most semantic tags used correctly. Minor structural issues present. One or two validation errors."},
+                {"grade": "C", "description": "Some semantic tags used. Structure is mostly correct but missing key elements. Several validation errors."},
+                {"grade": "D", "description": "Few semantic tags used. Structure is incomplete. Many validation errors present."},
+                {"grade": "F", "description": "No semantic tags used or document structure is largely incorrect. Fails W3C validation."}
+            ]
+        },
+        {
+            "criteria": "CSS Styling",
+            "marks": "5%",
+            "in_context": "Responsive layout using Grid or Flexbox, product card styling, mobile compatibility.",
+            "performance_levels": [
+                {"grade": "A", "description": "Responsive grid layout implemented correctly. Product cards are well styled with all required elements. Page is fully readable on mobile and desktop."},
+                {"grade": "B", "description": "Grid or Flexbox used but minor responsiveness issues. Product cards mostly complete. Mostly readable on mobile."},
+                {"grade": "C", "description": "Basic styling applied but layout is not fully responsive. Some product card elements missing."},
+                {"grade": "D", "description": "Minimal styling applied. Layout breaks on mobile. Product cards are incomplete."},
+                {"grade": "F", "description": "Little to no CSS applied. No responsive layout. Page is unusable on mobile."}
+            ]
+        },
+        {
+            "criteria": "JavaScript Interactivity",
+            "marks": "5%",
+            "in_context": "Add to Cart button functionality, confirmation message display.",
+            "performance_levels": [
+                {"grade": "A", "description": "Add to Cart button works correctly on all product cards. Confirmation message displays clearly as an on-page notification."},
+                {"grade": "B", "description": "Button works on most cards. Confirmation message displays but may use an alert instead of on-page notification."},
+                {"grade": "C", "description": "Button works inconsistently. Confirmation message displays sometimes."},
+                {"grade": "D", "description": "Button exists but functionality is largely broken. Confirmation message rarely displays."},
+                {"grade": "F", "description": "No JavaScript functionality implemented or button does not work at all."}
+            ]
+        },
+        {
+            "criteria": "Reflection",
+            "marks": "5%",
+            "in_context": "200-300 word reflection covering planning, challenges, and improvements.",
+            "performance_levels": [
+                {"grade": "A", "description": "Reflection is 200-300 words. All three points addressed clearly and thoughtfully. Writing is coherent and specific."},
+                {"grade": "B", "description": "Reflection meets word count. Two of three points addressed well. Minor lack of depth on one point."},
+                {"grade": "C", "description": "Reflection is slightly under or over word count. All three points mentioned but lacking depth."},
+                {"grade": "D", "description": "Reflection does not meet word count. Only one or two points addressed. Very little depth."},
+                {"grade": "F", "description": "Reflection is missing or does not address any of the required points."}
+            ]
+        }
+    ]
+
     demo_project = {
         "id": "demo",
         "name": "E-Commerce Product Listing Page",
         "weightage": 20,
         "due_date": "13 June 2026",
-        "progress": 33,
+        "progress": 17,
         "spec_file": None,
-        "rubric": []
+        "rubric": demo_rubric
     }
 
     outstanding = [
@@ -387,7 +438,7 @@ def demo():
     ]
 
     completed = [
-        (6, None, "Plan the Page Layout", "Sketch a wireframe of your product listing page before writing any code. Your layout must include a navigation bar, a product grid with at least 6 products, and a footer. Decide on a colour scheme and font. You do not need to use design software — a hand-drawn sketch is acceptable.", 1),
+        (6, None, "Plan the Page Layout", "Sketch a wireframe of your product listing page before writing any code. Your layout must include a navigation bar, a product grid with at least 6 products, and a footer. Decide on a colour scheme and font. You do not need to use design software — a hand drawn sketch is acceptable.", 1),
     ]
 
     counts = [0.17, 6, 1]

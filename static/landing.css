@@ -25,6 +25,7 @@ body {
     flex-direction: column;
     gap: 16px;
     padding-left: 80px;
+    max-width: 500px;
 }
 
 .logo {
@@ -52,9 +53,9 @@ body {
 }
 
 .divider {
-  width: 1px;
-  height: 360px;
-  background: #30363d;
+    width: 1px;
+    align-self: stretch;
+    background: #30363d;
 }
 
 .right {

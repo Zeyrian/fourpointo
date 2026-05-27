@@ -29,8 +29,8 @@ body {
     max-width: 440px;
     margin-bottom: 60px;
     margin-left: auto;
-    margin-right: auto;
-  }
+    margin-right: 48px;
+}
 
 .logo {
   display: flex;

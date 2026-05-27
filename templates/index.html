@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>fourpointo</title>
         <link rel="icon" type="image/png" href="{{ url_for('static', filename='4point0-removebg-preview.png') }}">
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
@@ -43,7 +44,7 @@
                     <p style="margin-top: 12px;"><strong>Due Date: {{ current_project.due_date }}</strong></p>
                     <p style="color: #aaa;">Weightage: {{ current_project.weightage }}%</p>
                     <a href="/{{ current_project.spec_file }}" target="_blank" style="color: #aaa; font-size: 0.9rem;">📄 View Spec</a>
-                    <hr style="border-color: #444; margin: 12px 0;">
+                    <hr style="border-color: #30363d; margin: 12px 0;">
                     <p style="color: #aaa;">Progress: {{ current_project.progress }}%</p>
                     <p style="color: #aaa;">Tasks Completed: {{ counts[2] }} / {{ counts[1] }}</p>
                 </div>
@@ -126,7 +127,7 @@
         <div class="task-modal-content" onclick="event.stopPropagation()" style="width: 700px; max-height: 80vh; overflow-y: auto; padding: 32px;">
             <h3 id="rubric-modal-criteria"></h3>
             <p id="rubric-modal-in-context" style="color: #aaa; font-size: 0.85rem; margin-top: 6px;"></p>
-            <hr style="border-color: #444; margin: 12px 0;">
+            <hr style="border-color: #30363d; margin: 12px 0;">
             <div id="rubric-modal-levels" style="margin-top: 16px;"></div>
         </div>
     </div>

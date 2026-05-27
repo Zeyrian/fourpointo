@@ -1,6 +1,6 @@
 body {
-    font-family: Arial, sans-serif;
-    background-color: #1e1e1e;
+    font-family: 'Inter', Arial, sans-serif;
+    background-color: #0d1117;
     color: #ffffff;
     height: 100vh;
     display: flex;
@@ -20,13 +20,13 @@ body {
     display: flex;
     flex-direction: column;
     gap: 8px;
-    border: 1px solid #3a3a3a;
+    border: 1px solid #30363d;
     border-radius: 12px;
     box-shadow: 0 4px 20px rgba(0,0,0,0.25);
 }
 
 .sidebar-card {
-    background-color: #2d2d2d;
+    background-color: #161b22;
     border-radius: 12px;
     padding: 16px;
     display: flex;
@@ -34,7 +34,7 @@ body {
     gap: 8px;
     flex: 1;
     overflow-y: auto;
-    border: 1px solid #3a3a3a;
+    border: 1px solid #30363d;
 }
 
 .sidebar-card a {
@@ -61,17 +61,17 @@ body {
 }
 
 .project-btn:hover {
-    background-color: #3d3d3d;
+    background-color: #1c2128;
 }
 
-.project-btn.active { background-color: #555; }
+.project-btn.active { background-color: #2d333b; }
 
 .add-btn {
     width: 100%;
     padding: 8px 12px;
     border-radius: 8px;
-    border: 1px solid #3a3a3a;
-    background: #2a2a2a;
+    border: 1px solid #30363d;
+    background: #161b22;
     color: white;
     cursor: pointer;
     font-size: 0.85rem;
@@ -81,8 +81,8 @@ body {
 }
 
 .add-btn:hover {
-    background: #3d3d3d;
-    border-color: #555;
+    background: #1c2128;
+    border-color: #444c56;
 }
 
 .content {
@@ -103,7 +103,7 @@ body {
 }
 
 .task-card {
-    background: #2d2d2d;
+    background: #161b22;
     padding: 8px 10px;
     border-radius: 6px;
     margin-bottom: 6px;
@@ -178,7 +178,7 @@ body {
 }
 
 .task-modal-content {
-    background: #2d2d2d;
+    background: #161b22;
     padding: 32px;
     border-radius: 12px;
     width: 500px;
@@ -190,13 +190,13 @@ body {
 #task-modal-edit {
     width: 100%;
     min-height: 120px;
-    background: #3d3d3d;
+    background: #1c2128;
     color: white;
     border: none;
     border-radius: 8px;
     padding: 10px;
     font-size: 0.9rem;
-    font-family: Arial, sans-serif;
+    font-family: 'Inter', Arial, sans-serif;
     resize: vertical;
     margin-top: 8px;
     outline: none;
@@ -231,7 +231,7 @@ body {
     position: absolute;
     right: 0;
     top: 100%;
-    background: #3d3d3d;
+    background: #1c2128;
     border-radius: 8px;
     padding: 8px;
     z-index: 100;
@@ -251,7 +251,7 @@ body {
 }
 
 .dots-menu button:hover {
-    background: #555;
+    background: #2d333b;
 }
 
 #delete-modal {
@@ -269,7 +269,7 @@ body {
 }
 
 #modal form {
-    background: #2d2d2d;
+    background: #161b22;
     padding: 32px;
     border-radius: 12px;
     display: flex;
@@ -282,7 +282,7 @@ body {
     padding: 10px;
     border-radius: 6px;
     border: none;
-    background: #3d3d3d;
+    background: #1c2128;
     color: white;
 }
 
@@ -370,7 +370,7 @@ body {
 }
 
 .rubric-row:hover td {
-    background: #3d3d3d;
+    background: #1c2128;
 }
 
 #rubric-modal {
@@ -392,8 +392,8 @@ body {
     position: fixed;
     top: 12px; left: 12px;
     z-index: 300;
-    background: #2d2d2d;
-    border: 1px solid #3a3a3a;
+    background: #161b22;
+    border: 1px solid #30363d;
     border-radius: 8px;
     color: white;
     width: 36px; height: 36px;
@@ -408,8 +408,8 @@ body {
     position: fixed;
     top: 12px; left: 12px;
     z-index: 300;
-    background: #2d2d2d;
-    border: 1px solid #3a3a3a;
+    background: #161b22;
+    border: 1px solid #30363d;
     border-radius: 8px;
     color: white;
     width: 36px; height: 36px;
@@ -435,7 +435,7 @@ body {
       z-index: 200;
       transform: translateX(-100%);
       transition: transform 0.25s ease;
-      background: #1e1e1e;
+      background: #0d1117;
       width: 260px;
       overflow-y: auto;
     }

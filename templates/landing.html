@@ -5,58 +5,96 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>fourpointo</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      background: #1e1e1e;
-      color: #fff;
-      font-family: 'Inter', sans-serif;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 12px;
-    }
-    h1 {
-      font-size: 28px;
-      font-weight: 700;
-    }
-    .btn-login {
-      background: #4a4a4a;
-      color: #fff;
-      border: none;
-      border-radius: 8px;
-      padding: 12px 0;
-      width: 220px;
-      font-size: 15px;
-      font-weight: 500;
-      font-family: 'Inter', sans-serif;
-      cursor: pointer;
-      transition: background 0.15s;
-    }
-    .btn-login:hover { background: #5a5a5a; }
-    .or {
-      font-size: 13px;
-      color: #aaa;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-    }
-    a {
-      color: #4fc3f7;
-      font-size: 14px;
-      text-decoration: underline;
-    }
-    a:hover { color: #81d4fa; }
-  </style>
+  <link rel="stylesheet" href="{{ url_for('static', filename='landing.css') }}">
 </head>
 <body>
-  <h1>Welcome to fourpointo.</h1>
-  <button class="btn-login" onclick="window.location.href='/login'">Login</button>
-  <span class="or">or</span>
-  <a href="/register">Sign Up</a>
-  <span class="or">or</span>
-  <a href="/demo" style="font-size: 13px; color: #aaa;">Try a demo</a>
+  <div class="container">
+    <div class="left">
+      <div class="logo">
+        <img src="{{ url_for('static', filename='4point0-removebg-preview.png') }}" height="36" width="36">
+        <span>fourpointo</span>
+      </div>
+      <h1>Manage your assignments, not your stress.</h1>
+      <p>Upload your assignment brief and fourpointo breaks it down into clear, actionable tasks using AI. Built for polytechnic students.</p>
+    </div>
 
+    <div class="divider"></div>
+
+    <div class="right">
+      <div class="error-msg" id="error-msg"></div>
+
+      <div class="field">
+        <label for="identifier">Username or email</label>
+        <input type="text" id="identifier" required autofocus>
+      </div>
+
+      <div class="field">
+        <div class="label-row">
+          <label for="password">Password</label>
+          <button class="show-btn" type="button" onclick="togglePassword()">Show</button>
+        </div>
+        <input type="password" id="password" required>
+      </div>
+
+      <div class="checkbox-row">
+        <input type="checkbox" id="remember">
+        <label for="remember">Keep me logged in</label>
+      </div>
+
+      <button class="btn-login" onclick="handleLogin()">Log in</button>
+
+      <div class="bottom-links">
+        <a href="/register">Don't have an account? Sign up.</a>
+        <a href="/demo" class="demo-link">Try a demo</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function togglePassword() {
+      const input = document.getElementById('password');
+      const btn = document.querySelector('.show-btn');
+      if (input.type === 'password') {
+        input.type = 'text';
+        btn.textContent = 'Hide';
+      } else {
+        input.type = 'password';
+        btn.textContent = 'Show';
+      }
+    }
+
+    async function handleLogin() {
+      const identifier = document.getElementById('identifier').value.trim();
+      const password = document.getElementById('password').value;
+      const remember = document.getElementById('remember').checked;
+      const errorEl = document.getElementById('error-msg');
+      errorEl.style.display = 'none';
+
+      if (!identifier || !password) {
+        errorEl.textContent = 'Please fill in all fields.';
+        errorEl.style.display = 'block';
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append('identifier', identifier);
+      formData.append('password', password);
+      formData.append('remember', remember ? 'on' : '');
+
+      const res = await fetch('/login', { method: 'POST', body: formData });
+      const data = await res.json();
+
+      if (res.ok && data.redirect) {
+        window.location.href = data.redirect;
+      } else {
+        errorEl.textContent = data.error || 'Invalid credentials.';
+        errorEl.style.display = 'block';
+      }
+    }
+
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Enter') handleLogin();
+    });
+  </script>
 </body>
 </html>

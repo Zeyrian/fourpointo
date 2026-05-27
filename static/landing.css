@@ -12,20 +12,20 @@ body {
 }
 
 .container {
-  display: flex;
-  width: 100%;
-  max-width: 1400px;
-  gap: 48px;
-  align-items: center;
-  padding: 0 5vw;
+    display: flex;
+    width: 100%;
+    max-width: 1400px;
+    gap: 48px;
+    align-items: center;
+    padding: 0 0 0 15vw;
 }
 
 .left {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  max-width: 480px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    max-width: 480px;
 }
 
 .logo {
@@ -53,15 +53,16 @@ body {
 }
 
 .divider {
-  width: 1px;
-  align-self: stretch;
-  min-height: 300px;
-  background: #30363d;
+    width: 1px;
+    align-self: stretch;
+    min-height: 300px;
+    background: #30363d;
 }
 
 .right {
-  flex: 0 0 38%;
-  max-width: 420px;
+    flex: 0 0 38%;
+    max-width: 420px;
+    padding-right: 0;
 }
 
 .form-card {

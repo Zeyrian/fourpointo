@@ -23,29 +23,33 @@
     <div class="right">
       <div class="error-msg" id="error-msg"></div>
 
-      <div class="field">
-        <label for="identifier">Username or email</label>
-        <input type="text" id="identifier" required autofocus>
-      </div>
-
-      <div class="field">
-        <div class="label-row">
-          <label for="password">Password</label>
-          <button class="show-btn" type="button" onclick="togglePassword()">Show</button>
+      <div class="form-card">
+        <div class="error-msg" id="error-msg"></div>
+      
+        <div class="field">
+          <label for="identifier">Username or email</label>
+          <input type="text" id="identifier" required autofocus>
         </div>
-        <input type="password" id="password" required>
-      </div>
-
-      <div class="checkbox-row">
-        <input type="checkbox" id="remember">
-        <label for="remember">Keep me logged in</label>
-      </div>
-
-      <button class="btn-login" onclick="handleLogin()">Log in</button>
-
-      <div class="bottom-links">
-        <a href="/register">Don't have an account? Sign up.</a>
-        <a href="/demo" class="demo-link">Try a demo</a>
+      
+        <div class="field">
+          <div class="label-row">
+            <label for="password">Password</label>
+            <button class="show-btn" type="button" onclick="togglePassword()">Show</button>
+          </div>
+          <input type="password" id="password" required>
+        </div>
+      
+        <div class="checkbox-row">
+          <input type="checkbox" id="remember">
+          <label for="remember">Keep me logged in</label>
+        </div>
+      
+        <button class="btn-login" onclick="handleLogin()">Log in</button>
+      
+        <div class="bottom-links">
+          <a href="/register">Don't have an account? Sign up.</a>
+          <a href="/demo" class="demo-link">Try a demo</a>
+        </div>
       </div>
     </div>
   </div>

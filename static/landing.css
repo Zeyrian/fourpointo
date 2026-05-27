@@ -179,3 +179,13 @@ input:-webkit-autofill:focus {
   -webkit-text-fill-color: #fff;
   border: 1px solid #30363d;
 }
+
+.form-card {
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 12px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }

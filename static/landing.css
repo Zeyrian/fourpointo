@@ -12,20 +12,20 @@ body {
 }
 
 .container {
-    display: flex;
-    width: 100%;
-    max-width: 1400px;
-    gap: 48px;
-    align-items: center;
-    padding: 0 0 0 20vw;
+  display: flex;
+  width: 100%;
+  max-width: 1400px;
+  align-items: center;
+  margin: 0 auto;
+  padding: 0 48px;
+  gap: 48px;
 }
 
 .left {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    max-width: 400px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
 .logo {
@@ -53,25 +53,26 @@ body {
 }
 
 .divider {
-    width: 1px;
-    align-self: stretch;
-    min-height: 300px;
-    background: #30363d;
+  width: 1px;
+  align-self: stretch;
+  min-height: 300px;
+  background: #30363d;
+  flex-shrink: 0;
 }
 
 .right {
-    flex: 0 0 320px;
-    max-width: 320px;
+  flex: 0 0 380px;
+  margin-left: auto;
 }
 
 .form-card {
-    background: #161b22;
-    border: 1px solid #30363d;
-    border-radius: 12px;
-    padding: 28px;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
+  background: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 12px;
+  padding: 36px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
 }
 
 .field {
@@ -214,5 +215,6 @@ input[type="checkbox"] {
     flex: 0 0 auto;
     width: 100%;
     max-width: 100%;
+    margin-left: 0;
   }
 }

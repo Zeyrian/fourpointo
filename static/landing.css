@@ -57,11 +57,10 @@ body {
 }
 
 .right {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
+    flex: 0.6;
+    max-width: 300px;
+    margin-left: auto;
+  }
 
 .field {
   display: flex;

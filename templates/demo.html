@@ -46,9 +46,9 @@
                         <div id="outstanding-col">
                             {% for task in outstanding %}
                             <div class="task-card" id="task-{{ task[0] }}" style="display: flex; justify-content: space-between; align-items: center;"
-                                onclick="openTaskModal({{ task[0] }}, {{ task[2] | tojson }}, {{ task[3] | tojson }})">
+                                onclick="openTaskModal({{ task[0] }})">
                                 <span>{{ task[2] }}</span>
-                                <input type="checkbox" onclick="event.stopPropagation(); completeTask({{ task[0] }}, {{ task[2] | tojson }}, {{ task[3] | tojson }})">
+                                <input type="checkbox" onclick="event.stopPropagation(); completeTask({{ task[0] }})">
                             </div>
                             {% endfor %}
                         </div>
@@ -58,7 +58,7 @@
                         <h3 style="margin-bottom: 16px;">Completed Tasks</h3>
                         <div id="completed-col">
                             {% for task in completed %}
-                            <div class="task-card completed-card" id="task-{{ task[0] }}" onclick="uncompleteTask({{ task[0] }}, {{ task[2] | tojson }}, {{ task[3] | tojson }})">
+                            <div class="task-card completed-card" id="task-{{ task[0] }}" onclick="uncompleteTask({{ task[0] }})">
                                 <span>{{ task[2] }}</span>
                                 <div class="undo-overlay">Mark as incomplete</div>
                             </div>
@@ -127,55 +127,72 @@
     </div>
 
     <script>
-        let completedCount = 1;
-        const totalTasks = 6;
-
+        const taskData = {
+            {% for task in outstanding %}
+            {{ task[0] }}: { title: {{ task[2] | tojson }}, instructions: {{ task[3] | tojson }}, completed: false },
+            {% endfor %}
+            {% for task in completed %}
+            {{ task[0] }}: { title: {{ task[2] | tojson }}, instructions: {{ task[3] | tojson }}, completed: true },
+            {% endfor %}
+        };
+    
+        let completedCount = {{ completed | length }};
+        const totalTasks = {{ (outstanding | length) + (completed | length) }};
+    
         function updateProgress() {
             const pct = Math.round((completedCount / totalTasks) * 100);
             document.getElementById('progress-pct').innerText = pct;
             document.getElementById('sidebar-progress').innerText = pct;
             document.getElementById('completed-count').innerText = completedCount;
         }
-
-        function completeTask(taskId, title, instructions) {
+    
+        function completeTask(taskId) {
+            const task = taskData[taskId];
+            if (!task) return;
             const card = document.getElementById('task-' + taskId);
             if (!card) return;
             card.className = 'task-card completed-card';
             card.removeAttribute('style');
-            card.setAttribute('onclick', `uncompleteTask(${taskId}, ${JSON.stringify(title)}, ${JSON.stringify(instructions)})`);
-            card.innerHTML = `<span>${title}</span><div class="undo-overlay">Mark as incomplete</div>`;
+            card.onclick = function() { uncompleteTask(taskId); };
+            card.innerHTML = `<span>${task.title}</span><div class="undo-overlay">Mark as incomplete</div>`;
             document.getElementById('completed-col').appendChild(card);
+            task.completed = true;
             completedCount++;
             updateProgress();
         }
-
-        function uncompleteTask(taskId, title, instructions) {
+    
+        function uncompleteTask(taskId) {
+            const task = taskData[taskId];
+            if (!task) return;
             const card = document.getElementById('task-' + taskId);
             if (!card) return;
             card.className = 'task-card';
             card.style.display = 'flex';
             card.style.justifyContent = 'space-between';
             card.style.alignItems = 'center';
-            card.setAttribute('onclick', `openTaskModal(${taskId}, ${JSON.stringify(title)}, ${JSON.stringify(instructions)})`);
-            card.innerHTML = `<span>${title}</span><input type="checkbox" onclick="event.stopPropagation(); completeTask(${taskId}, ${JSON.stringify(title)}, ${JSON.stringify(instructions)})">`;
+            card.onclick = function() { openTaskModal(taskId); };
+            card.innerHTML = `<span>${task.title}</span><input type="checkbox" onclick="event.stopPropagation(); completeTask(${taskId})">`;
             document.getElementById('outstanding-col').appendChild(card);
+            task.completed = false;
             completedCount--;
             updateProgress();
         }
-
-        function openTaskModal(taskId, title, instructions) {
-            document.getElementById('task-modal-title').innerText = title;
-            document.getElementById('task-modal-instructions').innerText = instructions;
+    
+        function openTaskModal(taskId) {
+            const task = taskData[taskId];
+            if (!task) return;
+            document.getElementById('task-modal-title').innerText = task.title;
+            document.getElementById('task-modal-instructions').innerText = task.instructions;
             document.getElementById('task-modal').style.display = 'flex';
         }
-
+    
         function openRubricModal(row) {
             const criteria = row.dataset.criteria;
             const inContext = row.dataset.inContext;
             const levels = JSON.parse(row.dataset.levels);
-
+    
             document.getElementById('rubric-modal-criteria').innerText = criteria;
-
+    
             const inContextEl = document.getElementById('rubric-modal-in-context');
             if (inContext) {
                 inContextEl.innerText = inContext;
@@ -183,10 +200,10 @@
             } else {
                 inContextEl.style.display = 'none';
             }
-
+    
             const levelsContainer = document.getElementById('rubric-modal-levels');
             levelsContainer.innerHTML = '';
-
+    
             if (levels && levels.length > 0) {
                 const table = document.createElement('table');
                 table.className = 'rubric-table';
@@ -208,10 +225,10 @@
                 `;
                 levelsContainer.appendChild(table);
             }
-
+    
             document.getElementById('rubric-modal').style.display = 'flex';
         }
-
+    
         function toggleSidebar() {
             document.getElementById('sidebar').classList.toggle('open');
             document.getElementById('sidebar-overlay').classList.toggle('open');

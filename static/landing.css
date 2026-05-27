@@ -1,7 +1,7 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
-  background: #1e1e1e;
+  background: #0d1117;
   color: #fff;
   font-family: 'Inter', sans-serif;
   min-height: 100vh;
@@ -104,40 +104,23 @@ input[type="password"] {
   transition: border-color 0.15s;
 }
 
-input[type="text"]:focus,
-input[type="password"]:focus {
-  border-color: #666;
+input[type="text"],
+input[type="password"] {
+  background: #161b22;
+  border: 1px solid #30363d;
 }
 
-.checkbox-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 13px;
-}
-
-input[type="checkbox"] {
-  width: 15px;
-  height: 15px;
-  accent-color: #4fc3f7;
-  cursor: pointer;
+.divider {
+  background: #30363d;
 }
 
 .btn-login {
-  background: #4a4a4a;
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  padding: 12px;
-  font-size: 15px;
-  font-weight: 600;
-  font-family: 'Inter', sans-serif;
-  cursor: pointer;
-  transition: background 0.15s;
-  width: 100%;
+  background: #21262d;
 }
 
-.btn-login:hover { background: #5a5a5a; }
+.btn-login:hover {
+  background: #30363d;
+}
 
 .error-msg {
   background: #3a1a1a;

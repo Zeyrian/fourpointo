@@ -12,20 +12,20 @@ body {
 }
 
 .container {
-    display: flex;
-    width: 100%;
-    max-width: 1400px;
-    gap: 64px;
-    align-items: center;
+  display: flex;
+  width: 100%;
+  max-width: 1400px;
+  gap: 48px;
+  align-items: center;
+  padding: 0 5vw;
 }
-  
+
 .left {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    padding-left: 80px;
-    max-width: 500px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 480px;
 }
 
 .logo {
@@ -53,25 +53,27 @@ body {
 }
 
 .divider {
-    width: 1px;
-    align-self: stretch;
-    background: #30363d;
+  width: 1px;
+  align-self: stretch;
+  min-height: 300px;
+  background: #30363d;
 }
 
 .right {
-    flex: 0 0 420px;
-    padding-right: 80px;
+  flex: 0 0 38%;
+  max-width: 420px;
 }
 
-  .form-card {
-    background: #161b22;
-    border: 1px solid #30363d;
-    border-radius: 12px;
-    padding: 36px;
-    display: flex;
-    flex-direction: column;
-    gap: 18px;
-  }
+.form-card {
+  background: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 12px;
+  padding: 36px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
 .field {
   display: flex;
   flex-direction: column;
@@ -189,14 +191,19 @@ input[type="checkbox"] {
   font-size: 12px;
 }
 
-@media (max-width: 640px) {
+@media (max-width: 768px) {
   .container {
     flex-direction: column;
     gap: 40px;
+    padding: 0;
   }
 
   .divider {
     display: none;
+  }
+
+  .left {
+    max-width: 100%;
   }
 
   .left h1 {
@@ -206,6 +213,6 @@ input[type="checkbox"] {
   .right {
     flex: 0 0 auto;
     width: 100%;
-    margin-left: 0;
+    max-width: 100%;
   }
 }

@@ -17,16 +17,16 @@ body {
     max-width: 1400px;
     gap: 48px;
     align-items: center;
-    padding: 0 0 0 15vw;
-}
+    padding: 0 0 0 20vw;
+  }
 
-.left {
+  .left {
     flex: 1;
     display: flex;
     flex-direction: column;
     gap: 16px;
-    max-width: 480px;
-}
+    max-width: 400px;
+  }
 
 .logo {
   display: flex;
@@ -60,19 +60,18 @@ body {
 }
 
 .right {
-    flex: 0 0 38%;
-    max-width: 420px;
-    padding-right: 0;
+    flex: 0 0 320px;
+    max-width: 320px;
 }
 
 .form-card {
-  background: #161b22;
-  border: 1px solid #30363d;
-  border-radius: 12px;
-  padding: 36px;
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 12px;
+    padding: 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
 }
 
 .field {

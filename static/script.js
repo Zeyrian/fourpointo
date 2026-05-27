@@ -90,6 +90,16 @@ async function saveInstructions() {
         document.getElementById('task-modal-edit').style.display = 'none';
         document.getElementById('edit-btn').style.display = 'flex';
         document.getElementById('save-btn').style.display = 'none';
+
+        const taskCards = document.querySelectorAll('.task-card');
+        taskCards.forEach(card => {
+            const onclick = card.getAttribute('onclick');
+            if (onclick && onclick.includes(`openTaskModal(${currentTaskId},`)) {
+                card.setAttribute('onclick', 
+                    `openTaskModal(${currentTaskId}, '${document.getElementById('task-modal-title').innerText}', '${newInstructions.replace(/'/g, "\\'")}')`)
+            }
+        });
+
         closeTaskModal();
         showToast();
     }

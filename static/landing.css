@@ -12,13 +12,12 @@ body {
 }
 
 .container {
-  display: flex;
-  width: 100%;
-  max-width: 1200px;
-  gap: 64px;
-  align-items: center;
-  justify-content: space-between;
-}
+    display: flex;
+    width: 100%;
+    max-width: 1200px;
+    gap: 64px;
+    align-items: center;
+  }
 
 .left {
   flex: 1;
@@ -59,19 +58,20 @@ body {
 }
 
 .right {
-  flex: 0 0 380px;
-  margin-left: auto;
-}
+    flex: 0 0 420px;
+    margin-left: auto;
+    padding-right: 48px;
+  }
 
 .form-card {
-  background: #161b22;
-  border: 1px solid #30363d;
-  border-radius: 12px;
-  padding: 32px;
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-}
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 12px;
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
 
 .field {
   display: flex;
@@ -106,7 +106,7 @@ input[type="password"] {
   background: #0d1117;
   border: 1px solid #444c56;
   border-radius: 8px;
-  padding: 10px 12px;
+  padding: 14px 12px;
   font-size: 14px;
   font-family: 'Inter', sans-serif;
   color: #fff;

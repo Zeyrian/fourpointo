@@ -99,6 +99,7 @@ Generate the task list:"""
         ]
     )
     
+    print(f"[generate_tasks] Input: {response.usage.prompt_tokens} | Output: {response.usage.completion_tokens} | Total: {response.usage.total_tokens}")
     return response.choices[0].message.content
 
 def generate_rubric(table_text, weightage):
@@ -140,6 +141,7 @@ Generate the rubric:"""
         ]
     )
     
+    print(f"[generate_rubric] Input: {response.usage.prompt_tokens} | Output: {response.usage.completion_tokens} | Total: {response.usage.total_tokens}")
     return response.choices[0].message.content
 
 def extract_tables(filepath):

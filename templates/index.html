@@ -3,14 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>fourpointo</title>
-        <link rel="icon" type="image/png" href="{{ url_for('static', filename='4point0-removebg-preview.png') }}">
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <title>fourpointo</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='4point0-removebg-preview.png') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
     <button class="hamburger-btn" id="hamburger-btn" onclick="toggleSidebar()">☰</button>
     <div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+    <button class="avatar-btn" id="avatar-btn" onclick="toggleAvatarDropdown(event)">
+        {{ current_user.username[0] | upper }}
+    </button>
+    <div class="avatar-dropdown" id="avatar-dropdown">
+        <button onclick="openSettingsModal()">Settings</button>
+        <div class="dropdown-divider"></div>
+        <a href="/logout">Logout</a>
+    </div>
+
     <div class="main">
         <div class="sidebar" id="sidebar">
             <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
@@ -32,9 +42,8 @@
                 {% endfor %}
             </div>
             <button class="add-btn" onclick="document.getElementById('modal').style.display='flex'">+ New Project</button>
-            <a href="/logout" style="font-size: 0.75rem; color: #4fc3f7; text-align: center; text-decoration: underline; margin-top: 4px;">Logout</a>
         </div>
-        
+
         <div class="content">
             {% if outstanding is defined and completed is defined and outstanding is not none and completed is not none %}
             <div style="width: 100%; align-self: flex-start;">
@@ -81,7 +90,7 @@
                             </thead>
                             <tbody>
                                 {% for item in current_project.rubric %}
-                                <tr class="rubric-row" 
+                                <tr class="rubric-row"
                                     data-criteria="{{ item.criteria }}"
                                     data-in-context="{{ item.in_context }}"
                                     data-levels='{{ item.performance_levels | tojson }}'
@@ -103,6 +112,8 @@
             {% endif %}
         </div>
     </div>
+
+    <!-- New Project Modal -->
     <div id="modal" style="display:none;" onclick="document.getElementById('modal').style.display='none'">
         <form id="add-project-form" enctype="multipart/form-data" onclick="event.stopPropagation()">
             <input type="text" name="assignment_name" placeholder="Project Name" required>
@@ -113,6 +124,8 @@
             <button type="submit" id="submit-btn">Create Project</button>
         </form>
     </div>
+
+    <!-- Task Modal -->
     <div id="task-modal" style="display:none;" onclick="document.getElementById('task-modal').style.display='none'">
         <div class="task-modal-content" onclick="event.stopPropagation()" style="position:relative;">
             <button id="edit-btn" onclick="enableEdit()">✏️</button>
@@ -123,6 +136,7 @@
         </div>
     </div>
 
+    <!-- Rubric Modal -->
     <div id="rubric-modal" style="display:none;" onclick="document.getElementById('rubric-modal').style.display='none'">
         <div class="task-modal-content" onclick="event.stopPropagation()" style="width: 700px; max-height: 80vh; overflow-y: auto; padding: 32px;">
             <h3 id="rubric-modal-criteria"></h3>
@@ -132,6 +146,7 @@
         </div>
     </div>
 
+    <!-- Delete Modal -->
     <div id="delete-modal" style="display:none;" onclick="document.getElementById('delete-modal').style.display='none'">
         <div class="task-modal-content" onclick="event.stopPropagation()">
             <h3 id="delete-modal-title"></h3>
@@ -139,6 +154,126 @@
             <div style="display: flex; gap: 12px; margin-top: 24px;">
                 <button id="delete-confirm-btn" style="flex: 1; background: #c0392b; color: white; border: none; padding: 10px; border-radius: 8px; cursor: pointer; font-weight: bold;">Delete</button>
                 <button onclick="document.getElementById('delete-modal').style.display='none'" style="flex: 1; background: transparent; color: white; border: 2px solid white; padding: 10px; border-radius: 8px; cursor: pointer;">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settings-modal" style="display:none;" onclick="closeSettingsModal(event)">
+        <div class="settings-modal-content" onclick="event.stopPropagation()">
+            <div class="settings-modal-header">
+                <h2>Settings</h2>
+                <button class="settings-close-btn" onclick="document.getElementById('settings-modal').style.display='none'">✕</button>
+            </div>
+
+            <!-- Account -->
+            <div class="settings-section">
+                <div class="settings-section-title">Account</div>
+                <div class="settings-field">
+                    <label>Username</label>
+                    <input type="text" id="settings-username" value="{{ current_user.username }}" autocomplete="off">
+                </div>
+                <div class="settings-field">
+                    <label>Email</label>
+                    <input type="email" id="settings-email" value="{{ current_user.email }}" autocomplete="off">
+                </div>
+                <div class="settings-field">
+                    <label>New Password</label>
+                    <input type="password" id="settings-password" placeholder="Leave blank to keep current">
+                </div>
+                <div class="settings-field">
+                    <label>Confirm New Password</label>
+                    <input type="password" id="settings-password-confirm" placeholder="Confirm new password">
+                </div>
+                <p class="settings-msg error" id="account-error"></p>
+                <p class="settings-msg success" id="account-success">Changes saved.</p>
+                <button class="settings-save-btn" onclick="saveAccount()">Save Changes</button>
+            </div>
+
+            <!-- Theme -->
+            <div class="settings-section">
+                <div class="settings-section-title">Theme</div>
+                <div class="theme-grid">
+                    <div class="theme-swatch {% if not current_user.theme or current_user.theme == 'dark' %}active{% endif %}" onclick="selectTheme('dark', this)">
+                        <div class="theme-swatch-preview" style="background:#0d1117;">
+                            <div class="tsb full" style="background:#30363d;"></div>
+                            <div class="tsb two-thirds" style="background:#161b22;"></div>
+                            <div class="tsb half" style="background:#4fc3f7;"></div>
+                        </div>
+                        <div class="theme-swatch-label">Dark</div>
+                    </div>
+                    <div class="theme-swatch {% if current_user.theme == 'light' %}active{% endif %}" onclick="selectTheme('light', this)">
+                        <div class="theme-swatch-preview" style="background:#f6f8fa;">
+                            <div class="tsb full" style="background:#d0d7de;"></div>
+                            <div class="tsb two-thirds" style="background:#e1e4e8;"></div>
+                            <div class="tsb half" style="background:#0969da;"></div>
+                        </div>
+                        <div class="theme-swatch-label">Light</div>
+                    </div>
+                    <div class="theme-swatch {% if current_user.theme == 'midnight' %}active{% endif %}" onclick="selectTheme('midnight', this)">
+                        <div class="theme-swatch-preview" style="background:#000000;">
+                            <div class="tsb full" style="background:#1a1a1a;"></div>
+                            <div class="tsb two-thirds" style="background:#111111;"></div>
+                            <div class="tsb half" style="background:#ffffff;"></div>
+                        </div>
+                        <div class="theme-swatch-label">Midnight</div>
+                    </div>
+                    <div class="theme-swatch {% if current_user.theme == 'amethyst' %}active{% endif %}" onclick="selectTheme('amethyst', this)">
+                        <div class="theme-swatch-preview" style="background:#12091f;">
+                            <div class="tsb full" style="background:#2a1a3e;"></div>
+                            <div class="tsb two-thirds" style="background:#1e1030;"></div>
+                            <div class="tsb half" style="background:#b388ff;"></div>
+                        </div>
+                        <div class="theme-swatch-label">Amethyst</div>
+                    </div>
+                    <div class="theme-swatch {% if current_user.theme == 'forest' %}active{% endif %}" onclick="selectTheme('forest', this)">
+                        <div class="theme-swatch-preview" style="background:#0a1208;">
+                            <div class="tsb full" style="background:#1a2e1a;"></div>
+                            <div class="tsb two-thirds" style="background:#122010;"></div>
+                            <div class="tsb half" style="background:#69f0ae;"></div>
+                        </div>
+                        <div class="theme-swatch-label">Forest</div>
+                    </div>
+                    <div class="theme-swatch {% if current_user.theme == 'rose' %}active{% endif %}" onclick="selectTheme('rose', this)">
+                        <div class="theme-swatch-preview" style="background:#1a0a0d;">
+                            <div class="tsb full" style="background:#2e1418;"></div>
+                            <div class="tsb two-thirds" style="background:#200e11;"></div>
+                            <div class="tsb half" style="background:#f48fb1;"></div>
+                        </div>
+                        <div class="theme-swatch-label">Rose</div>
+                    </div>
+                    <div class="theme-swatch {% if current_user.theme == 'mocha' %}active{% endif %}" onclick="selectTheme('mocha', this)">
+                        <div class="theme-swatch-preview" style="background:#120d08;">
+                            <div class="tsb full" style="background:#2a1f14;"></div>
+                            <div class="tsb two-thirds" style="background:#1c1510;"></div>
+                            <div class="tsb half" style="background:#ffcc80;"></div>
+                        </div>
+                        <div class="theme-swatch-label">Mocha</div>
+                    </div>
+                    <div class="theme-swatch {% if current_user.theme == 'arctic' %}active{% endif %}" onclick="selectTheme('arctic', this)">
+                        <div class="theme-swatch-preview" style="background:#e8f4f8;">
+                            <div class="tsb full" style="background:#b3d9e8;"></div>
+                            <div class="tsb two-thirds" style="background:#cce8f2;"></div>
+                            <div class="tsb half" style="background:#0277bd;"></div>
+                        </div>
+                        <div class="theme-swatch-label">Arctic</div>
+                    </div>
+                </div>
+                <p class="settings-msg error" id="theme-error"></p>
+                <p class="settings-msg success" id="theme-success">Theme saved.</p>
+            </div>
+
+            <!-- Tier -->
+            <div class="settings-section">
+                <div class="settings-section-title">Tier</div>
+                <div class="tier-row">
+                    <div>
+                        <div style="font-size:0.9rem; font-weight:600;">{{ 'Premium' if current_user.premium_user else 'Free' }}</div>
+                        <div style="font-size:0.78rem; color:#aaa; margin-top:3px;">Project creation, task breakdown, marking rubric</div>
+                    </div>
+                    <span class="tier-badge">{{ 'Premium' if current_user.premium_user else 'Free' }}</span>
+                </div>
+                <p class="tier-coming-soon">Premium features coming soon.</p>
             </div>
         </div>
     </div>

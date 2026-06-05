@@ -28,16 +28,18 @@ login_manager.init_app(app)
 login_manager.login_view = "landing"
 
 class User(UserMixin):
-    def __init__(self, id, username, email):
+    def __init__(self, id, username, email, premium_user, theme):
         self.id = id
         self.username = username
         self.email = email
+        self.premium_user = premium_user
+        self.theme = theme
 
 @login_manager.user_loader
 def load_user(user_id):
     user = database.get_user_by_id(user_id)
     if user:
-        return User(user[0], user[1], user[2])
+        return User(user[0], user[1], user[2], user[4], user[5])
     return None
 
 def is_weak_password(password: str):
@@ -213,7 +215,7 @@ def register_user():
     if isinstance(result, str):
         return {"error": result}, 400
     
-    login_user(User(result, username, email))
+    login_user(User(result, username, email, 0, 'dark'))
     return {"redirect": "/"}, 200
 
 @app.route("/login", methods=["GET", "POST"])
@@ -232,7 +234,7 @@ def login():
 
         if check_password_hash(user[3], password):
             remember = request.form.get('remember') == 'on'
-            login_user(User(user[0], user[1], user[2]), remember=remember)
+            login_user(User(user[0], user[1], user[2], user[4], user[5]), remember=remember)
             return {"redirect": "/"}, 200
         else:
             return {"error": "Invalid credentials"}, 401
@@ -367,6 +369,35 @@ def delete_project(project_id):
 @app.route("/privacy")
 def privacy():
     return render_template("privacy.html")
+
+@app.route("/settings/theme", methods=["POST"])
+@login_required
+def update_theme():
+    entry = request.json["theme"]
+    database.update_theme(current_user.id, entry)
+
+    return {"success": True}, 200
+
+@app.route("/settings/account", methods=["POST"])
+@login_required
+def update_user_info():
+    id = current_user.id
+    if "username" in request.json:
+        error = database.update_username(id, request.json["username"])
+        if error:
+            return {"error": error}, 400
+
+    if "email" in request.json:
+        error = database.update_email(id, request.json["email"])
+        if error:
+            return {"error": error}, 400
+
+    if "password" in request.json:
+        error = database.update_password(id, request.json["password"])
+        if error:
+            return {"error": error}, 400
+
+    return {"success": True}, 200
 
 @app.route("/demo")
 def demo():

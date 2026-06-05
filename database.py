@@ -162,6 +162,53 @@ def get_user_by_username(username):
     connection.close()
     return user
 
+def get_theme(user_id):
+    connection = sqlite3.connect('fourpointo.db')
+    cursor = connection.cursor()
+    cursor.execute("SELECT theme FROM users WHERE id = ?", (user_id,))
+    result = cursor.fetchone()
+    connection.close()
+    return result[0] if result else 'dark'
+
+def update_theme(user_id, theme):
+    connection = sqlite3.connect('fourpointo.db')
+    cursor = connection.cursor()
+    cursor.execute("UPDATE users SET theme = ? WHERE id = ?", (theme, user_id))
+    connection.commit()
+    connection.close()
+
+def update_username(user_id, username):
+    connection = sqlite3.connect('fourpointo.db')
+    cursor = connection.cursor()
+    cursor.execute("SELECT * FROM users WHERE username = ? AND id != ?", (username, user_id))
+    if cursor.fetchone():
+        connection.close()
+        return "Username already exists"
+    cursor.execute("UPDATE users SET username = ? WHERE id = ?", (username, user_id))
+    connection.commit()
+    connection.close()
+    return None
+
+def update_email(user_id, email):
+    connection = sqlite3.connect('fourpointo.db')
+    cursor = connection.cursor()
+    cursor.execute("SELECT * FROM users WHERE email = ? AND id != ?", (email, user_id))
+    if cursor.fetchone():
+        connection.close()
+        return "Email already exists"
+    cursor.execute("UPDATE users SET email = ? WHERE id = ?", (email, user_id))
+    connection.commit()
+    connection.close()
+    return None
+
+def update_password(user_id, new_password):
+    connection = sqlite3.connect('fourpointo.db')
+    cursor = connection.cursor()
+    hashed = generate_password_hash(new_password).decode('utf-8')
+    cursor.execute("UPDATE users SET password = ? WHERE id = ?", (hashed, user_id))
+    connection.commit()
+    connection.close()
+
 cursor.execute("""CREATE TABLE IF NOT EXISTS projects (
                    id integer primary key autoincrement,
                    assignment_name text,

@@ -163,3 +163,87 @@ function toggleSidebar() {
     document.getElementById('sidebar-overlay').classList.toggle('open');
     document.getElementById('hamburger-btn').classList.toggle('hidden');
   }
+
+  function toggleAvatarDropdown(e) {
+    e.stopPropagation();
+    document.getElementById('avatar-dropdown').classList.toggle('open');
+}
+
+document.addEventListener('click', function() {
+    document.getElementById('avatar-dropdown').classList.remove('open');
+});
+
+function openSettingsModal() {
+    document.getElementById('avatar-dropdown').classList.remove('open');
+    document.getElementById('settings-modal').style.display = 'flex';
+}
+
+function closeSettingsModal(e) {
+    if (e.target === document.getElementById('settings-modal')) {
+        document.getElementById('settings-modal').style.display = 'none';
+    }
+}
+
+function saveAccount() {
+    const username = document.getElementById('settings-username').value.trim();
+    const email = document.getElementById('settings-email').value.trim();
+    const password = document.getElementById('settings-password').value;
+    const confirm = document.getElementById('settings-password-confirm').value;
+    const errorEl = document.getElementById('account-error');
+    const successEl = document.getElementById('account-success');
+    errorEl.style.display = 'none';
+    successEl.style.display = 'none';
+
+    if (password && password !== confirm) {
+        errorEl.textContent = 'Passwords do not match.';
+        errorEl.style.display = 'block';
+        return;
+    }
+
+    const payload = {};
+    if (username) payload.username = username;
+    if (email) payload.email = email;
+    if (password) payload.password = password;
+
+    fetch('/settings/account', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.error) {
+            errorEl.textContent = data.error;
+            errorEl.style.display = 'block';
+        } else {
+            successEl.style.display = 'block';
+            document.getElementById('settings-password').value = '';
+            document.getElementById('settings-password-confirm').value = '';
+        }
+    });
+}
+
+function selectTheme(themeName, el) {
+    document.querySelectorAll('.theme-swatch').forEach(s => s.classList.remove('active'));
+    el.classList.add('active');
+    const errorEl = document.getElementById('theme-error');
+    const successEl = document.getElementById('theme-success');
+    errorEl.style.display = 'none';
+    successEl.style.display = 'none';
+
+    fetch('/settings/theme', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ theme: themeName })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.error) {
+            errorEl.textContent = data.error;
+            errorEl.style.display = 'block';
+        } else {
+            successEl.style.display = 'block';
+            setTimeout(() => successEl.style.display = 'none', 2000);
+        }
+    });
+}

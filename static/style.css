@@ -726,3 +726,138 @@ body {
     .theme-grid { grid-template-columns: repeat(4, 1fr); gap: 6px; }
     .avatar-btn { top: 10px; right: 10px; }
 }
+
+/* ── Theme variables ── */
+:root, [data-theme="dark"] {
+    --bg: #0d1117;
+    --bg-card: #161b22;
+    --bg-input: #1c2128;
+    --border: #30363d;
+    --text: #ffffff;
+    --text-muted: #aaa;
+    --accent: #4fc3f7;
+}
+
+[data-theme="light"] {
+    --bg: #f6f8fa;
+    --bg-card: #ffffff;
+    --bg-input: #f0f2f4;
+    --border: #d0d7de;
+    --text: #1f2328;
+    --text-muted: #656d76;
+    --accent: #0969da;
+}
+
+[data-theme="midnight"] {
+    --bg: #000000;
+    --bg-card: #111111;
+    --bg-input: #1a1a1a;
+    --border: #2a2a2a;
+    --text: #ffffff;
+    --text-muted: #888;
+    --accent: #ffffff;
+}
+
+[data-theme="amethyst"] {
+    --bg: #12091f;
+    --bg-card: #1e1030;
+    --bg-input: #2a1a3e;
+    --border: #3d2060;
+    --text: #f0e6ff;
+    --text-muted: #a78bca;
+    --accent: #b388ff;
+}
+
+[data-theme="forest"] {
+    --bg: #0a1208;
+    --bg-card: #122010;
+    --bg-input: #1a2e1a;
+    --border: #2a4a2a;
+    --text: #e6f4e6;
+    --text-muted: #80b080;
+    --accent: #69f0ae;
+}
+
+[data-theme="rose"] {
+    --bg: #1a0a0d;
+    --bg-card: #200e11;
+    --bg-input: #2e1418;
+    --border: #4a2028;
+    --text: #ffe6ea;
+    --text-muted: #c08090;
+    --accent: #f48fb1;
+}
+
+[data-theme="mocha"] {
+    --bg: #120d08;
+    --bg-card: #1c1510;
+    --bg-input: #2a1f14;
+    --border: #4a3828;
+    --text: #fff3e0;
+    --text-muted: #c0a080;
+    --accent: #ffcc80;
+}
+
+[data-theme="arctic"] {
+    --bg: #e8f4f8;
+    --bg-card: #ffffff;
+    --bg-input: #cce8f2;
+    --border: #b3d9e8;
+    --text: #0a2a3a;
+    --text-muted: #456070;
+    --accent: #0277bd;
+}
+
+/* ── Apply variables to existing components ── */
+body {
+    background-color: var(--bg);
+    color: var(--text);
+}
+.sidebar, .sidebar-card {
+    border-color: var(--border);
+    background-color: var(--bg-card);
+}
+.sidebar p, .welcome { color: var(--text-muted); }
+.project-btn { color: var(--text); }
+.project-btn:hover { background-color: var(--bg-input); }
+.project-btn.active { background-color: var(--bg-input); }
+.add-btn {
+    background: var(--bg-card);
+    border-color: var(--border);
+    color: var(--text);
+}
+.add-btn:hover { background: var(--bg-input); }
+.task-card { background: var(--bg-card); }
+.task-card:hover { background: var(--bg-input); }
+#modal, #task-modal, #rubric-modal, #delete-modal, #settings-modal {
+    background: rgba(0,0,0,0.5);
+}
+#modal form, .task-modal-content, .settings-modal-content {
+    background: var(--bg-card);
+    border-color: var(--border);
+}
+#modal input, .settings-field input, #task-modal-edit {
+    background: var(--bg-input);
+    color: var(--text);
+    border-color: var(--border);
+}
+.dots-menu { background: var(--bg-input); }
+.dots-menu button { color: var(--text); }
+.dots-menu button:hover { background: var(--bg-card); }
+.rubric-table th { color: var(--text-muted); border-color: var(--border); }
+.rubric-table td { border-color: var(--border); }
+.rubric-table td:first-child { color: var(--text-muted); }
+.rubric-row:hover td { background: var(--bg-input); }
+.avatar-btn { background: var(--bg-input); border-color: var(--border); color: var(--text); }
+.avatar-dropdown { background: var(--bg-card); border-color: var(--border); }
+.avatar-dropdown a, .avatar-dropdown button { color: var(--text); }
+.avatar-dropdown a:hover, .avatar-dropdown button:hover { background: var(--bg-input); }
+.dropdown-divider { background: var(--border); }
+.settings-section { border-color: var(--border); }
+.settings-section-title { color: var(--text-muted); }
+.settings-field label { color: var(--text-muted); }
+.settings-modal-header h2 { color: var(--text); }
+.theme-swatch-label { background: var(--bg-input); border-color: var(--border); color: var(--text-muted); }
+.tier-badge { background: var(--bg-input); border-color: var(--border); color: var(--text-muted); }
+#toast { background: var(--bg-card); border-color: var(--border); color: var(--text); }
+footer { color: var(--text-muted); }

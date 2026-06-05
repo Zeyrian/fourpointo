@@ -226,6 +226,7 @@ function saveAccount() {
 function selectTheme(themeName, el) {
     document.querySelectorAll('.theme-swatch').forEach(s => s.classList.remove('active'));
     el.classList.add('active');
+    document.body.setAttribute('data-theme', themeName);
     const errorEl = document.getElementById('theme-error');
     const successEl = document.getElementById('theme-success');
     errorEl.style.display = 'none';

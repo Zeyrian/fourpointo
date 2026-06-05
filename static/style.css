@@ -744,7 +744,7 @@ body {
     --bg-input: #f0f2f4;
     --border: #d0d7de;
     --text: #1f2328;
-    --text-muted: #656d76;
+    --text-muted: #444d56;
     --accent: #0969da;
 }
 
@@ -804,7 +804,7 @@ body {
     --bg-input: #cce8f2;
     --border: #b3d9e8;
     --text: #0a2a3a;
-    --text-muted: #456070;
+    --text-muted: #2a4a5a;;
     --accent: #0277bd;
 }
 

@@ -79,9 +79,9 @@ def extract_text(file):
     else:
         return None
 
-def generate_tasks(pdf_text):
+def generate_tasks(pdf_text, rubric_json=None):
     client = Groq(api_key=os.getenv("GROQ_API_KEY"))
-    
+
     response = client.chat.completions.create(
         model="llama-3.3-70b-versatile",
         temperature = 0,
@@ -91,7 +91,20 @@ def generate_tasks(pdf_text):
                 "content": f"""You are helping a student break down an assignment specification into clear, actionable tasks.
 
 Read the following assignment specification. If it is not an assignment specification, return []. Else, generate a numbered list of specific tasks the student needs to complete.
-Be concrete and specific. Each task should be a single actionable item. Return only a JSON array, no intro text, each item has a title (short, 3-5 words) and instructions (full detail)
+
+Be concrete and specific. Follow these rules carefully:
+
+1. DO NOT collapse a labeled task/section (e.g. "Task 2. Research Report") into a single output task just because the document gives it one heading. Look INSIDE that section for bullet points, sub-questions, or numbered sub-items (e.g. "What is HTTP?", "Research on NAT") — each distinct sub-topic or question listed must become its OWN separate task, with its own title and instructions. A heading like "Research Report" is a section label, not a task by itself.
+
+2. Watch for EITHER/OR structures — the document may present two or more alternative paths (e.g. "Research on web service" OR "Research on FTPS service"), often with the word "OR" appearing between them, or phrased as alternative options. When you detect this:
+   - Generate tasks for ONLY the path that appears FIRST/is listed as the primary option, OR if the document gives no clear preference, generate tasks for the first option only and add one task titled "Confirm assignment path" instructing the student to confirm with their tutor which option (e.g. Option i vs Option ii) they should pursue before proceeding.
+   - Do NOT generate tasks for both alternative paths — that would double the workload incorrectly.
+
+3. Each task should be a single actionable item scoped to one specific sub-topic, question, or step — never one broad task covering an entire section (e.g. never just "Write Report" or "Research Web Service" as one task when it contains multiple distinct sub-questions).
+
+4. Include non-research tasks too if the document mentions them (formatting requirements, submission steps, presentations, screenshots required, etc.) — but each should be its own distinct, concrete task.
+
+Return only a JSON array, no intro text, each item has a title (short, 3-5 words) and instructions (full detail, including what the task should cover).
 
 Assignment specification:
 {pdf_text}

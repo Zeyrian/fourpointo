@@ -79,8 +79,17 @@ def extract_text(file):
     else:
         return None
 
-def generate_tasks(pdf_text, rubric_json=None):
+def generate_tasks(pdf_text, rubric_json=None, custom_instructions=None):
     client = Groq(api_key=os.getenv("GROQ_API_KEY"))
+
+    if custom_instructions:
+        custom_block = f"""
+STUDENT-PROVIDED INSTRUCTIONS (HIGHEST PRIORITY — these override any default assumption or guess below, including which path to choose in an EITHER/OR structure):
+"{custom_instructions}"
+
+"""
+    else:
+        custom_block = ""
 
     response = client.chat.completions.create(
         model="llama-3.3-70b-versatile",
@@ -93,13 +102,13 @@ def generate_tasks(pdf_text, rubric_json=None):
 Read the following assignment specification. If it is not an assignment specification, return []. Else, generate a numbered list of specific tasks the student needs to complete.
 
 Be concrete and specific. Follow these rules carefully:
-
+{custom_block}
 1. DO NOT collapse a labeled task/section (e.g. "Task 2. Research Report") into a single output task just because the document gives it one heading. Look INSIDE that section for bullet points, sub-questions, or numbered sub-items (e.g. "What is HTTP?", "Research on NAT") — each distinct sub-topic or question listed must become its OWN separate task, with its own title and instructions. A heading like "Research Report" is a section label, not a task by itself.
 
 2. Watch for EITHER/OR structures — the document may present two or more alternative paths (e.g. "Research on web service" OR "Research on FTPS service"), often with the word "OR" appearing between them, or phrased as alternative options. When you detect this:
-   - Generate tasks for ONLY the path listed FIRST/as the primary option.
+   - If the student-provided instructions above specify which path to take, follow that and generate tasks for ONLY that path — do not add a "confirm path" task in this case, since the student already confirmed it.
+   - Otherwise (no student instruction on this): generate tasks for ONLY the path listed FIRST/as the primary option, and ALWAYS add one additional task titled "Confirm assignment path" whose instructions explain that the document presents multiple alternative paths (name them), that this task list assumes the first one, and that the student should confirm with their tutor which path they are actually required or permitted to do before proceeding.
    - Do NOT generate tasks for both alternative paths — that would double the workload incorrectly.
-   - ALWAYS add one additional task titled "Confirm assignment path" whose instructions explain that the document presents multiple alternative paths (name them), that this task list assumes the first one, and that the student should confirm with their tutor which path they are actually required or permitted to do before proceeding. Add this task even if you believe the document's preference is clear — the student, not the model, should make that judgment.
 
 3. Each task should be a single actionable item scoped to one specific sub-topic, question, or step — never one broad task covering an entire section (e.g. never just "Write Report" or "Research Web Service" as one task when it contains multiple distinct sub-questions).
 
@@ -269,6 +278,7 @@ def add_project():
     weightage = request.form["weightage"]
     due_date = request.form["due_date"]
     pdf = request.files["pdf"]
+    custom_instructions = request.form.get("custom_instructions", "").strip()
 
     due_date_obj = date.fromisoformat(due_date)
     if due_date_obj < date.today():
@@ -292,7 +302,7 @@ def add_project():
         filepath = pdf_filepath
         os.remove(filepath.replace('.pdf', '.docx'))
 
-    tasks_text = generate_tasks(text)
+    tasks_text = generate_tasks(text, custom_instructions=custom_instructions)
     tasks_json = json.loads(tasks_text)
 
     if len(tasks_json) == 0:

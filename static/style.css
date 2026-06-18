@@ -277,12 +277,14 @@ body {
     width: 400px;
 }
 
-#modal input {
+#modal input, #modal textarea {
     padding: 10px;
     border-radius: 6px;
     border: 1px solid var(--border);
     background: var(--bg-input);
     color: var(--text);
+    font-family: inherit;
+    font-size: 0.9rem;
 }
 
 #modal button {

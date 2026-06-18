@@ -21,6 +21,12 @@ Self-hosted on a repurposed Dell Latitude 7300 running Ubuntu Server 26.04. Guni
 
 # Updates Board
 ---
+## 🛠️ Dev Log — 5 June 2026
+- Added 8 themes to choose - Dark, Light, Midnight, Amethyst, Forest, Rose, Mocha, Arctic
+- Added a settings menu, removed old logout link
+- General Bug Fixes
+
+---
 ## 🛠️ Dev Log — 23 May 2026
 - Added mobile support
 - AI Temperature set to 0 for the most consistent answers

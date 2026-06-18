@@ -413,6 +413,17 @@ body {
 .rubric-row { cursor: pointer; }
 .rubric-row:hover td { background: var(--bg-input); }
 
+.rubric-subrow td { font-size: 0.75rem; }
+.rubric-subrow .rubric-subcell {
+    padding-left: 28px;
+    font-weight: normal;
+    color: var(--text-muted);
+}
+.rubric-subrow .rubric-subcell::before {
+    content: "↳ ";
+    opacity: 0.5;
+}
+
 /* ── Delete modal ── */
 .delete-modal-danger {
     background: #c0392b;

@@ -97,8 +97,9 @@ Be concrete and specific. Follow these rules carefully:
 1. DO NOT collapse a labeled task/section (e.g. "Task 2. Research Report") into a single output task just because the document gives it one heading. Look INSIDE that section for bullet points, sub-questions, or numbered sub-items (e.g. "What is HTTP?", "Research on NAT") — each distinct sub-topic or question listed must become its OWN separate task, with its own title and instructions. A heading like "Research Report" is a section label, not a task by itself.
 
 2. Watch for EITHER/OR structures — the document may present two or more alternative paths (e.g. "Research on web service" OR "Research on FTPS service"), often with the word "OR" appearing between them, or phrased as alternative options. When you detect this:
-   - Generate tasks for ONLY the path that appears FIRST/is listed as the primary option, OR if the document gives no clear preference, generate tasks for the first option only and add one task titled "Confirm assignment path" instructing the student to confirm with their tutor which option (e.g. Option i vs Option ii) they should pursue before proceeding.
+   - Generate tasks for ONLY the path listed FIRST/as the primary option.
    - Do NOT generate tasks for both alternative paths — that would double the workload incorrectly.
+   - ALWAYS add one additional task titled "Confirm assignment path" whose instructions explain that the document presents multiple alternative paths (name them), that this task list assumes the first one, and that the student should confirm with their tutor which path they are actually required or permitted to do before proceeding. Add this task even if you believe the document's preference is clear — the student, not the model, should make that judgment.
 
 3. Each task should be a single actionable item scoped to one specific sub-topic, question, or step — never one broad task covering an entire section (e.g. never just "Write Report" or "Research Web Service" as one task when it contains multiple distinct sub-questions).
 
@@ -131,20 +132,27 @@ def generate_rubric(table_text, weightage):
 The following is plain text extracted from the grading criteria section of an assignment specification. The text spans multiple pages of a table. Here is how to interpret it:
 
 - The table has these columns: Criteria | In Context | A (>=80%) | B (>=70%) | C (>=60%) | D (>=50%) | F (<50%)
-- A top-level criteria has its own marks allocation e.g. "Flowchart Design (16%)"
-- Sub-criteria appear under a top-level criteria e.g. "Logic (10%)", "Flow Chart Conventions (3%)", "Constraints (3%)" are all under "Flowchart Design (16%)"
-- The performance level descriptions (A/B/C/D/F) that follow a criteria name belong to that criteria
-- The total marks of ALL top-level criteria must sum to exactly {weightage}%
+- A top-level criteria has its own marks allocation e.g. "Flowchart Design (16%)" or "Task 2: Research Report (20 marks)"
+- Sub-criteria appear under a top-level criteria, each with their OWN marks allocation that adds up to the parent's total, e.g. "Logic (10%)", "Flow Chart Conventions (3%)", "Constraints (3%)" are all sub-criteria of "Flowchart Design (16%)"
+- The performance level descriptions (A/B/C/D/F) that follow a criteria name belong to that specific criteria (whether it's a top-level criteria or a sub-criteria)
 
-Extract ONLY the top-level criteria. For each top-level criteria, collect ALL the sub-criteria and their performance levels. 
-Important: The "criteria" field must NOT include the marks percentage in brackets. The marks belong only in the "marks" field.
-Return a JSON array where each item has:
-- "criteria": the full criteria name exactly as written, do not shorten or abbreviate it. Do not include the marks percentage in brackets.
-- - "marks": the marks allocated exactly as written (e.g. "40%" or "4%")
+Important distinctions:
+- Do NOT create a top-level entry for general descriptive/context text that introduces the assignment scenario but has no marks allocation of its own (e.g. an intro paragraph describing the case study scenario). That text belongs in a top-level criteria's "in_context" field if relevant, not as its own row.
+- If a top-level criteria (e.g. "Task 2: Research Report") is immediately followed by several smaller named items that each have their own mark allocation and that together sum to (or are clearly part of) that criteria's total, those are SUB-CRITERIA of that top-level criteria — they must be nested inside it, never returned as separate top-level entries.
+- Each top-level criteria should appear exactly once. Never list a criteria both as a top-level entry AND list its sub-criteria as additional separate top-level entries.
+
+Return a JSON array where each item is a top-level criteria with:
+- "criteria": the full criteria name exactly as written, do not shorten or abbreviate it. Do not include the marks percentage/value in brackets.
+- "marks": the marks allocated exactly as written (e.g. "40%" or "20 marks")
+- "in_context": any general context/description for this criteria as a whole, exactly as written (excluding sub-criteria, which go in "sub_criteria" instead)
+- "performance_levels": array of objects with "grade" and "description" exactly as written, describing the criteria AS A WHOLE. If this criteria has sub-criteria, leave this as an empty array [] instead — the performance levels belong on the sub-criteria themselves.
+- "sub_criteria": array of objects, one per sub-criteria (empty array [] if this criteria has no sub-criteria). Each sub-criteria object has:
+  - "criteria": the sub-criteria name exactly as written
+  - "marks": the sub-criteria's own marks exactly as written
+  - "in_context": context for this specific sub-criteria
+  - "performance_levels": array of {{"grade", "description"}} for this specific sub-criteria
 
 Note: Some rubrics list criteria as a percentage of the assignment itself (e.g. 40% + 40% + 20% = 100%). Others list criteria as a percentage of the overall grade (e.g. 4% + 16% + 10% = 30%). Accept both formats — do not force criteria to sum to {weightage}%. Instead, just extract whatever criteria and marks are explicitly stated in the document.
-- "in_context": all sub-criteria and context exactly as written
-- "performance_levels": array of objects with "grade" and "description" exactly as written. If a top-level criteria has multiple sub-criteria, combine all their performance level descriptions together under the same grade.
 
 Return only a JSON array, no intro text, no markdown backticks.
 

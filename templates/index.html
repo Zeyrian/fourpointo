@@ -98,6 +98,18 @@
                                     <td>{{ item.criteria }}</td>
                                     <td>{{ item.marks }}</td>
                                 </tr>
+                                {% if item.sub_criteria %}
+                                {% for sub in item.sub_criteria %}
+                                <tr class="rubric-row rubric-subrow"
+                                    data-criteria="{{ sub.criteria }}"
+                                    data-in-context="{{ sub.in_context }}"
+                                    data-levels='{{ sub.performance_levels | tojson }}'
+                                    onclick="openRubricModal(this)">
+                                    <td class="rubric-subcell">{{ sub.criteria }}</td>
+                                    <td>{{ sub.marks }}</td>
+                                </tr>
+                                {% endfor %}
+                                {% endif %}
                                 {% endfor %}
                             </tbody>
                         </table>

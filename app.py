@@ -129,34 +129,37 @@ def generate_rubric(table_text, weightage):
                 "role": "user",
                 "content": f"""You are helping a student identify the marking rubric from an assignment specification.
 
-The following is plain text extracted from the grading criteria section of an assignment specification. The text spans multiple pages of a table. Here is how to interpret it:
+Below is the FULL TEXT of an assignment specification document. It contains multiple sections — task descriptions, instructions, submission policy, AND the actual grading/marking rubric table — all mixed together. Your first job is to locate the real rubric table and ignore everything else.
 
-- The table has these columns: Criteria | In Context | A (>=80%) | B (>=70%) | C (>=60%) | D (>=50%) | F (<50%)
-- A top-level criteria has its own marks allocation e.g. "Flowchart Design (16%)" or "Task 2: Research Report (20 marks)"
-- Sub-criteria appear under a top-level criteria, each with their OWN marks allocation that adds up to the parent's total, e.g. "Logic (10%)", "Flow Chart Conventions (3%)", "Constraints (3%)" are all sub-criteria of "Flowchart Design (16%)"
-- The performance level descriptions (A/B/C/D/F) that follow a criteria name belong to that specific criteria (whether it's a top-level criteria or a sub-criteria)
+HOW TO FIND THE REAL RUBRIC TABLE:
+The actual rubric table is identifiable because it has grade-band columns (e.g. "Excellent (A)", "Good (B)", "Satisfactory (C)", "Poor/Insufficient (D/F)", or similar — could also appear as "A (>=80%)", "B (>=70%)" etc.). Each row in this table is a criteria or sub-criteria with its own mark allocation, paired with a description for each grade band.
 
-Important distinctions:
-- Do NOT create a top-level entry for general descriptive/context text that introduces the assignment scenario but has no marks allocation of its own (e.g. an intro paragraph describing the case study scenario). That text belongs in a top-level criteria's "in_context" field if relevant, not as its own row.
-- If a top-level criteria (e.g. "Task 2: Research Report") is immediately followed by several smaller named items that each have their own mark allocation and that together sum to (or are clearly part of) that criteria's total, those are SUB-CRITERIA of that top-level criteria — they must be nested inside it, never returned as separate top-level entries.
-- Each top-level criteria should appear exactly once. Never list a criteria both as a top-level entry AND list its sub-criteria as additional separate top-level entries.
+IGNORE COMPLETELY (these never become criteria rows, not even top-level):
+- General scenario/background paragraphs with no mark value attached (e.g. a paragraph describing a fictional company's situation, used only to set context for a task)
+- Submission format instructions, file naming conventions, deadlines, late penalty policies, presentation logistics
+
+DO include as criteria:
+- Any task/section heading that HAS its own explicit mark value (e.g. "Task 1: Complete Cyber 101 Labs (10 marks)", "Task 2: Research Report (20 marks)") — these become top-level criteria even if they are not rows within the grade-band table itself.
+
+IDENTIFYING HIERARCHY (this requires connecting TWO different parts of the document):
+- The rubric table's rows often do NOT visually show their parent grouping within the table itself. You must actively cross-reference: look elsewhere in the document for task/section headings that have their own mark value (e.g. "Task 2: Research Report (20 marks)", "Flowchart Design (16%)").
+- For each such heading, check whether a set of rows in the rubric table have individual mark values that SUM to that heading's mark value (e.g. 2 + 8 + 8 + 2 = 20, matching "Task 2: Research Report (20 marks)"). If they do, treat that heading as the TOP-LEVEL criteria, and those summing rows as its "sub_criteria" — even though the table itself doesn't visually nest them. The connection is made by matching the marks, not by table formatting.
+- A rubric table row that does NOT sum into any task heading elsewhere in the document is its own top-level criteria, with an empty "sub_criteria" array.
+- If a task heading has no rows in the rubric table that sum to it (e.g. "Task 1: Complete Cyber 101 Labs" has no matching grade-band breakdown elsewhere), it is still its own top-level criteria, just with empty "performance_levels" and empty "sub_criteria" — use its own description as "in_context".
+- The performance level descriptions (A/B/C/D/F) that follow a criteria name belong to that specific criteria.
 
 Return a JSON array where each item is a top-level criteria with:
-- "criteria": the full criteria name exactly as written, do not shorten or abbreviate it. Do not include the marks percentage/value in brackets.
-- "marks": the marks allocated exactly as written (e.g. "40%" or "20 marks")
-- "in_context": any general context/description for this criteria as a whole, exactly as written (excluding sub-criteria, which go in "sub_criteria" instead)
-- "performance_levels": array of objects with "grade" and "description" exactly as written, describing the criteria AS A WHOLE. If this criteria has sub-criteria, leave this as an empty array [] instead — the performance levels belong on the sub-criteria themselves.
-- "sub_criteria": array of objects, one per sub-criteria (empty array [] if this criteria has no sub-criteria). Each sub-criteria object has:
-  - "criteria": the sub-criteria name exactly as written
-  - "marks": the sub-criteria's own marks exactly as written
-  - "in_context": context for this specific sub-criteria
-  - "performance_levels": array of {{"grade", "description"}} for this specific sub-criteria
+- "criteria": the full criteria name exactly as written in the rubric table, do not shorten or abbreviate it. Do not include the marks value in brackets.
+- "marks": the marks allocated exactly as written (e.g. "40%" or "2 marks")
+- "in_context": any context/description for this criteria exactly as written
+- "performance_levels": array of objects with "grade" and "description" exactly as written
+- "sub_criteria": array of sub-criteria objects nested under this criteria, determined using the mark-sum matching described above (empty array [] if no rows sum into this criteria). Each sub-criteria object has "criteria", "marks", "in_context", "performance_levels" in the same shape as above.
 
-Note: Some rubrics list criteria as a percentage of the assignment itself (e.g. 40% + 40% + 20% = 100%). Others list criteria as a percentage of the overall grade (e.g. 4% + 16% + 10% = 30%). Accept both formats — do not force criteria to sum to {weightage}%. Instead, just extract whatever criteria and marks are explicitly stated in the document.
+Note: Some rubrics list criteria as a percentage of the assignment itself, others as a percentage of the overall grade out of {weightage}%. Accept both — extract whatever the table actually states, do not force totals to match.
 
 Return only a JSON array, no intro text, no markdown backticks.
 
-Grading criteria text:
+Full assignment specification text:
 {table_text}
 
 Generate the rubric:"""
@@ -181,19 +184,10 @@ def extract_tables(filepath):
 
 def extract_rubric_text(filepath):
     doc = fitz.open(filepath)
-    rubric_text = ""
-    start_page = None
+    full_text = ""
     for page in doc:
-        text = page.get_text()
-        if any(keyword in text for keyword in ["Grading Criteria", "Marking Criteria", "Assessment Criteria", "Rubric", "Criteria", "grading criteria", "marking criteria", "criteria"]):
-            start_page = page.number
-            break
-    
-    if start_page is not None:
-        for i in range(start_page, len(doc)):
-            rubric_text += doc[i].get_text()
-    
-    return rubric_text
+        full_text += page.get_text()
+    return full_text
 
 @app.route("/landing")
 def landing():

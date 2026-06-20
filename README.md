@@ -21,6 +21,12 @@ Self-hosted on a repurposed Dell Latitude 7300 running Ubuntu Server 26.04. Guni
 
 # Updates Board
 ---
+## 🛠️ Dev Log — 20 June 2026
+- Added a function for users to give the AI custom instructions regarding tasks
+- Modified original AI prompts in the code to produce more accurate results
+- Each main category of marking rubric now has a sub-category if applicable
+
+---
 ## 🛠️ Dev Log — 5 June 2026
 - Added 8 themes to choose - Dark, Light, Midnight, Amethyst, Forest, Rose, Mocha, Arctic
 - Added a settings menu, removed old logout link

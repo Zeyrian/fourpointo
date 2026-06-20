@@ -88,7 +88,8 @@ def get_task_counts(project_id):
     total_task_count = len(tasks)
     completed_count = 0
 
-    for _, _, _, _, completed in tasks:
+    for row in tasks:
+        completed = row[4]
         if completed == 1:
             completed_count += 1
 

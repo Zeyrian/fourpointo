@@ -63,19 +63,38 @@ def is_weak_password(password: str):
 
 def extract_text(file):
     filename = file.filename
+
     if filename.endswith('.pdf'):
-        doc = fitz.open(stream=file.read(), filetype="pdf")
-        text = ""
-        for page in doc:
-            text += page.get_text()
-        return text
+        header = file.read(5)
+        file.stream.seek(0)
+        if header != b'%PDF-':
+            return None
+
+        try:
+            doc = fitz.open(stream=file.read(), filetype="pdf")
+            text = ""
+            for page in doc:
+                text += page.get_text()
+            return text
+        except Exception:
+            return None
+
     elif filename.endswith('.docx'):
-        import docx
-        doc = docx.Document(file)
-        text = ""
-        for para in doc.paragraphs:
-            text += para.text + "\n"
-        return text
+        header = file.read(4)
+        file.stream.seek(0)
+        if header != b'PK\x03\x04':
+            return None
+
+        try:
+            import docx
+            doc = docx.Document(file)
+            text = ""
+            for para in doc.paragraphs:
+                text += para.text + "\n"
+            return text
+        except Exception:
+            return None
+
     else:
         return None
 
@@ -114,7 +133,9 @@ Be concrete and specific. Follow these rules carefully:
 
 4. Include non-research tasks too if the document mentions them (formatting requirements, submission steps, presentations, screenshots required, etc.) — but each should be its own distinct, concrete task.
 
-Return only a JSON array, no intro text, each item has a title (short, 3-5 words) and instructions (full detail, including what the task should cover).
+5. Estimate an "effort" score from 1-10 for each task, representing how much time/work it realistically takes relative to the other tasks in this list — not an absolute time estimate. A quick formatting step or single screenshot might be 1-2. A multi-paragraph research write-up or building a working feature might be 7-9. Base this on the complexity and scope written in the instructions you generate, not on the task title alone.
+
+Return only a JSON array, no intro text, each item has a title (short, 3-5 words), instructions (full detail, including what the task should cover), and effort (integer, 1-10).
 
 Assignment specification:
 {pdf_text}
@@ -307,6 +328,13 @@ def add_project():
 
     if len(tasks_json) == 0:
         return {"error": "Document does not appear to be an assignment specification."}, 400
+    
+    for task in tasks_json:
+        effort = task.get("effort")
+        if not isinstance(effort, (int, float)) or effort < 1 or effort > 10:
+            task["effort"] = 5  # neutral fallback, doesn't skew the split badly
+        else:
+            task["effort"] = int(round(effort))
 
     table_text = extract_rubric_text(filepath)
     rubric_raw = generate_rubric(table_text, weightage)
